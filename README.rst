@@ -17,19 +17,44 @@ an existing Play SBT project without modifying the directory structure.
 Features
 --------
 
-- Does not require that Play or SBT be installed
 - Compiles HTML Scala templates
 - Compiles conf/routes file
 - Makes static assets available in the classpath with no copying
+- Does not require that Play or SBT be installed
 
 Benefits
 --------
 
 - Supports use of play in sub-projects (modules)
 - Better junit support (e.g. running cucumber-jvm through junit)
-- Full maven remote repo support (whereas SBT uses Ivy which is not 100% compatible)
-- Mature IDE support
-- Better Jenkins integration
+- Complete maven remote repo support including support for central proxies
+- Leverages mature IDE support
+- Easy Jenkins integration
+
+Installing the Plugin From Source
+---------------------------------
+
+Clone the repository from git and install the plugin in your local maven repository (on disk) ::
+
+  git clone https://github.com/absurdhero/play-pure-maven-plugin.git
+  cd play-pure-maven-plugin
+  mvn install
+
+Plugin Mojos
+------------
+
+In normal usage, you don't need to execute these directly.
+They run automatically during the right lifecycle phases when building a projet that uses this plugin.
+
+To get much more detailed help after installing the plugin,
+run ``mvn help:describe -Ddetail=true -Dplugin=net.raboof.play:play-pure-maven-plugin``
+
+play-pure:compile-templates
+  Translates scala.html templates and conf/routes into scala source files.
+
+play-pure:link-assets
+  This goal allows you to change javascript and other assets and see your changes immediately in your running server.
+  It adds your public assets directory to the classpath by creating a symlink in the build output directory.
 
 To-Do
 -----
@@ -49,22 +74,6 @@ A copy of the license is available in the LICENSE file.
 This software was originally developed at Nominum_ for internal use. Nominum allowed it to be released to the broader Play Framework community while supporting its future development by employing the author.
 
 .. _Nominum: http://www.nominum.com/
-
-Plugin Mojos
-------------
-
-In normal usage, you don't need to execute these directly.
-They run automatically during the right lifecycle phases when building a projet that uses this plugin.
-
-To get much more detailed help after installing the plugin,
-run ``mvn help:describe -Ddetail=true -Dplugin=net.raboof.play:play-pure-maven-plugin``
-
-play-pure:compile-templates
-  Translates scala.html templates and conf/routes into scala source files.
-
-play-pure:link-assets
-  This goal allows you to change javascript and other assets and see your changes immediately in your running server.
-  It adds your public assets directory to the classpath by creating a symlink in the build output directory.
 
 Maven Project Setup (pom.xml)
 ------------------------------
