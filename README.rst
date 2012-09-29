@@ -50,6 +50,22 @@ This software was originally developed at Nominum_ for internal use. Nominum all
 
 .. _Nominum: http://www.nominum.com/
 
+Plugin Mojos
+------------
+
+In normal usage, you don't need to execute these directly.
+They run automatically during the right lifecycle phases when building a projet that uses this plugin.
+
+To get much more detailed help after installing the plugin,
+run ``mvn help:describe -Ddetail=true -Dplugin=net.raboof.play:play-pure-maven-plugin``
+
+play-pure:compile-templates
+  Translates scala.html templates and conf/routes into scala source files.
+
+play-pure:link-assets
+  This goal allows you to change javascript and other assets and see your changes immediately in your running server.
+  It adds your public assets directory to the classpath by creating a symlink in the build output directory.
+
 Maven Project Setup (pom.xml)
 ------------------------------
 
