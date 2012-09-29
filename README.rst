@@ -46,6 +46,10 @@ License
 This project is licensed under the Apache License Version 2.0.
 A copy of the license is available in the LICENSE file.
 
+This software was originally developed at Nominum_ for internal use. Nominum allowed it to be released to the broader Play Framework community while supporting its future development by employing the author.
+
+.. _Nominum: http://www.nominum.com/
+
 Maven Project Setup (pom.xml)
 ------------------------------
 
