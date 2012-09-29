@@ -13,6 +13,7 @@ compile the routes file, and includes the "public" assets directory in your buil
 This plugin is easy to test out since it is possible to add it to
 an existing Play SBT project without modifying the directory structure.
 
+
 Features
 --------
 
@@ -33,7 +34,8 @@ Benefits
 To-Do
 -----
 
-- Provide a hot-reloading development server through an SBTLink implementation
+- Support continuous compilation of templates as source files are edited
+- Provide a hot-reloading development server through an SBTLink implementation or other mechanism
 - Find a way to use the play version specified by the plugin consumer rather than specifying a version in this plugin
 - As an Alternative, version this plugin based on the play version it is tied with
 - Asset linking is only supported on unix-like systems. A solution for Windows would be nice.
@@ -63,7 +65,7 @@ In the plugins section:
    <plugin>
        <groupId>com.nominum.build</groupId>
        <artifactId>play-pure-maven-plugin</artifactId>
-       <version>1.0-SNAPSHOT</version>
+       <version>1.1-SNAPSHOT</version>
        <executions>
            <execution>
                <goals>
@@ -76,14 +78,14 @@ In the plugins section:
 
    <plugins>
       <plugin>
-        <groupId>org.scala-tools</groupId>
-        <artifactId>maven-scala-plugin</artifactId>
-        <version>2.14.1</version>
+        <groupId>net.alchim31.maven</groupId>
+        <artifactId>scala-maven-plugin</artifactId>
+        <version>3.0.1</version>
         <configuration>
+          <!-- Use Zinc Compiler if running (https://github.com/typesafehub/zinc) -->
+          <recompileMode>incremental</recompileMode>
+          <useZincServer>true</useZincServer>
           <charset>UTF-8</charset>
-          <jvmArgs>
-            <jvmArg>-Xmx1024m</jvmArg>
-          </jvmArgs>
         </configuration>
         <executions>
           <execution>
