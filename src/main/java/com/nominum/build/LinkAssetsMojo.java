@@ -24,7 +24,7 @@ import java.io.File;
 import java.io.IOException;
 
 /**
- * Link static assets directory into build output directory
+ * Link static assets directory into build output directory.
  *
  * This Mojo only works on Unix-like systems with the "ln" program.
  *
@@ -44,28 +44,26 @@ public class LinkAssetsMojo
     private MavenProject project;
 
     /**
-     * Output directory in classpath
+     * Output directory in classpath.
      * @parameter expression="${project.build.outputDirectory}"
      * @required
      */
     private File outputDirectory;
 
     /**
-     * Location of the play conf directory
+     * Location of the play conf directory.
      * @parameter expression="${project.basedir}/public"
      * @required
      */
     private File assetDirectory;
 
     public void execute()
-            throws MojoExecutionException
-    {
+            throws MojoExecutionException {
 
         File outputDir = absolutePath(outputDirectory);
         File assetDir = absolutePath(assetDirectory);
 
-        if (!outputDir.exists())
-        {
+        if (!outputDir.exists()) {
             outputDir.mkdirs();
         }
 
@@ -94,7 +92,7 @@ public class LinkAssetsMojo
         }
     }
 
-    /** Convert Files with relative paths to be relative from the project basedir **/
+    /** Convert Files with relative paths to be relative from the project basedir. **/
     private File absolutePath(File file) {
         if (file.isAbsolute()) {
             return file;

@@ -26,7 +26,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Compiles scala.html files to scala source files and compiles routes
+ * Compiles scala.html files to scala source files and compiles routes.
  *
  * @goal compile-templates
  * 
@@ -46,51 +46,50 @@ public class TemplateCompilerMojo
     private MavenProject project;
 
     /**
-     * Location of the compiled templates
+     * Location of the compiled templates.
      * @parameter expression="${project.build.directory}/generated-sources/play-templates"
      * @required
      */
     private File generatedSourcesDirectory;
 
     /**
-     * Location of the template source files
+     * Location of the template source files.
      * @parameter expression="${pom.build.sourceDirectory}"
      * @required
      */
     private File sourceDirectory;
 
     /**
-     * Location of the play conf directory
+     * Location of the play conf directory.
      * @parameter expression="${project.basedir}/conf"
      * @required
      */
     private File confDirectory;
 
     public void execute()
-        throws MojoExecutionException
-    {
+        throws MojoExecutionException {
         File outputDir = absolutePath(generatedSourcesDirectory);
         File sourceDir = absolutePath(sourceDirectory);
 
         project.addCompileSourceRoot(outputDir.getAbsolutePath());
 
-        if (!outputDir.exists())
-        {
+        if (!outputDir.exists()) {
             outputDir.mkdirs();
         }
 
         PlayRoutesCompiler routesCompiler = new PlayRoutesCompiler();
-        routesCompiler.compile(absolutePath(confDirectory), outputDir, new scala.collection.mutable.ArrayBuffer<String>());
+        routesCompiler.compile(absolutePath(confDirectory), outputDir,
+                new scala.collection.mutable.ArrayBuffer<String>());
 
-        try
-        {
+        try {
             List<File> classpathFiles = new ArrayList<File>();
             String classpath = System.getProperty("java.class.path");
             for (String path : classpath.split(":")) {
                 classpathFiles.add(new File(path));
             }
 
-            TemplateCompiler templateCompiler = new TemplateCompiler(JavaConversions.asScalaBuffer(classpathFiles).toList(), true);
+            TemplateCompiler templateCompiler =
+                    new TemplateCompiler(JavaConversions.asScalaBuffer(classpathFiles).toList(), true);
             templateCompiler.compile(sourceDir, outputDir);
         }
         catch (Exception e)
@@ -99,7 +98,7 @@ public class TemplateCompilerMojo
         }
     }
 
-    /** Convert Files with relative paths to be relative from the project basedir **/
+    /** Convert Files with relative paths to be relative from the project basedir. **/
     private File absolutePath(File file) {
         if (file.isAbsolute()) {
             return file;

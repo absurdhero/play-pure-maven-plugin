@@ -6,7 +6,7 @@
   <packaging>maven-plugin</packaging>
   <version>1.1-SNAPSHOT</version>
   <name>play-pure-maven-plugin Maven Mojo</name>
-  <url>https://github.com/absurdhero/play-pure-maven-plugin</url>
+  <url>https://absurdhero.github.com/play-pure-maven-plugin</url>
   <description>Build Play Framework 2.0 Projects With Maven</description>
 
   <organization>
@@ -23,6 +23,18 @@
       <distribution>repo</distribution>
     </license>
   </licenses>
+
+  <issueManagement>
+    <url>https://github.com/absurdhero/play-pure-maven-plugin/issues</url>
+    <system>GitHub Issues</system>
+  </issueManagement>
+
+  <scm>
+     <url>https://github.com/absurdhero/play-pure-maven-plugin</url>
+     <connection>scm:git:git://github.com/absurdhero/play-pure-maven-plugin.git</connection>
+     <developerConnection>scm:git:git@github.com:absurdhero/play-pure-maven-plugin.git</developerConnection>
+  </scm>
+
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
@@ -62,6 +74,56 @@
             </goals>
           </execution>
         </executions>
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-site-plugin</artifactId>
+        <version>3.1</version>
+        <configuration>
+          <reportPlugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-project-info-reports-plugin</artifactId>
+                <version>2.5.1</version>
+                <configuration>
+                  <dependencyDetailsEnabled>true</dependencyDetailsEnabled>
+                  <dependencyLocationsEnabled>true</dependencyLocationsEnabled>
+                </configuration>
+            </plugin>
+            <plugin>
+              <groupId>org.apache.maven.plugins</groupId>
+              <artifactId>maven-javadoc-plugin</artifactId>
+              <version>2.9</version>
+            </plugin>
+            <plugin>
+              <groupId>org.apache.maven.plugins</groupId>
+              <artifactId>maven-checkstyle-plugin</artifactId>
+              <version>2.9.1</version>
+            </plugin>
+            <plugin>
+              <groupId>org.codehaus.mojo</groupId>
+              <artifactId>findbugs-maven-plugin</artifactId>
+              <version>2.5.2</version>
+              <configuration>
+                <onlyAnalyze>com.nominum.build</onlyAnalyze>
+                <findbugsXmlOutput>true</findbugsXmlOutput>
+                <findbugsXmlWithMessages>true</findbugsXmlWithMessages>
+              </configuration>
+            </plugin>
+            <plugin>
+              <groupId>org.apache.maven.plugins</groupId>
+              <artifactId>maven-pmd-plugin</artifactId>
+              <version>2.7.1</version>
+              <configuration>
+                <linkXref>true</linkXref>
+                <sourceEncoding>utf-8</sourceEncoding>
+                <minimumTokens>100</minimumTokens>
+                <targetJdk>1.5</targetJdk>
+              </configuration>
+            </plugin>
+          </reportPlugins>
+        </configuration>
       </plugin>
     </plugins>
   </build>
