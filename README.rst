@@ -44,7 +44,7 @@ Plugin Mojos
 ------------
 
 In normal usage, you don't need to execute these directly.
-They run automatically during the right lifecycle phases when building a projet that uses this plugin.
+They run automatically during the right lifecycle phases when building a project that uses this plugin.
 
 To get much more detailed help after installing the plugin,
 run ``mvn help:describe -Ddetail=true -Dplugin=net.raboof.play:play-pure-maven-plugin``

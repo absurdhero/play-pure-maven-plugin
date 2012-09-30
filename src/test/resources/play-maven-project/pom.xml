@@ -1,0 +1,114 @@
+<project>
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>com.example</groupId>
+    <artifactId>play-sbt-style-project</artifactId>
+    <version>1.0-SNAPSHOT</version>
+
+    <properties>
+        <targetJdk>1.5</targetJdk>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
+
+    <repositories>
+        <repository>
+            <id>typesafe</id>
+            <url>http://repo.typesafe.com/typesafe/releases/</url>
+        </repository>
+    </repositories>
+
+    <build>
+        <!-- Use the Play directory structure -->
+        <directory>target</directory>
+        <outputDirectory>target/scala-2.9.1/classes</outputDirectory>
+        <testOutputDirectory>target/test-classes</testOutputDirectory>
+        <sourceDirectory>app</sourceDirectory>
+        <testSourceDirectory>test</testSourceDirectory>
+        <resources>
+            <resource>
+                <directory>conf</directory>
+                <excludes>
+                    <exclude>application.conf*</exclude>
+                </excludes>
+            </resource>
+        </resources>
+        <testResources>
+            <testResource>
+                <directory>test/resources</directory>
+            </testResource>
+            <testResource>
+                <directory>features</directory>
+            </testResource>
+        </testResources>
+
+    <plugins>
+      <plugin>
+        <groupId>net.alchim31.maven</groupId>
+        <artifactId>scala-maven-plugin</artifactId>
+        <version>3.0.1</version>
+        <configuration>
+          <recompileMode>incremental</recompileMode>
+          <charset>UTF-8</charset>
+        </configuration>
+        <executions>
+          <execution>
+            <id>compile</id>
+            <goals>
+              <goal>compile</goal>
+            </goals>
+            <phase>compile</phase>
+          </execution>
+          <execution>
+            <id>test-compile</id>
+            <goals>
+              <goal>testCompile</goal>
+            </goals>
+            <phase>test-compile</phase>
+          </execution>
+          <execution>
+            <phase>process-resources</phase>
+            <goals>
+              <goal>compile</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+
+      <plugin>
+          <groupId>net.raboof.play</groupId>
+          <artifactId>play-pure-maven-plugin</artifactId>
+          <version>1.1-SNAPSHOT</version>
+          <executions>
+              <execution>
+                  <goals>
+                      <goal>compile-templates</goal>
+                      <goal>link-assets</goal>
+                  </goals>
+              </execution>
+          </executions>
+      </plugin>
+
+    </plugins>
+  </build>
+
+    <dependencies>
+        <!-- Play Framework -->
+        <dependency>
+            <groupId>play</groupId>
+            <artifactId>play_2.9.1</artifactId>
+            <version>2.0.3</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>play</groupId>
+            <artifactId>templates_2.9.1</artifactId>
+            <version>2.0.3</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>play</groupId>
+            <artifactId>play-test_2.9.1</artifactId>
+            <version>2.0.3</version>
+            <scope>compile</scope>
+        </dependency>
+    </dependencies>
+</project>
