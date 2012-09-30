@@ -78,14 +78,17 @@ This software was originally developed at Nominum_ for internal use. Nominum all
 Maven Project Setup (pom.xml)
 ------------------------------
 
+A bare-bones project can be found at `src/test/resources/play-maven-project <https://github.com/absurdhero/play-pure-maven-plugin/tree/master/src/test/resources/play-maven-project>`_
+This working project uses the recommended Play 2.0 file layout.
+
 Refer to ``sample_play_project_pom.xml`` for a non-trivial maven example
-project which works with the recommended Play 2.0 file layout.
+project which works with the Play 2.0 file layout.
 It handles class paths appropriately, sets up the scala compiler, and invokes
 the play-pure-maven plugin at the right points. This sample also shows how to
 set up jar packaging, provides the ability to start the production server with ``mvn exec:exec``,
 and shows how to correctly set up code coverage analysis for a typical play project.
 
-If you are a Maven maven, you can take a look at the relevant additions to the POM:
+If you are a Maven maven, you can take a look at just the essential additions to the POM:
 
 In the plugins section:
 
