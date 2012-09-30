@@ -1,9 +1,11 @@
 .DS_Store
-*/.DS_Store
 target/
 .history
-.idea/
-.idea_modules/
+.claspath
+.project
+.metadata
 .settings/
+.idea/
 *.iml
-*.swp
+.*.sw[a-z]
+*~
