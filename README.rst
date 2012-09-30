@@ -140,6 +140,16 @@ In the plugins section:
         </executions>
       </plugin>
 
+Add the Typesafe Repository so the Play Framework can be downloaded:
+
+::
+
+      <repositories>
+          <repository>
+              <id>typesafe</id>
+              <url>http://repo.typesafe.com/typesafe/releases/</url>
+          </repository>
+      </repositories>
 
 In the dependencies section, include the version of Play you will depend on:
 
