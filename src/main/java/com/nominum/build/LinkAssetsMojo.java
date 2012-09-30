@@ -64,7 +64,8 @@ public class LinkAssetsMojo
         File assetDir = absolutePath(assetDirectory);
 
         if (!outputDir.exists()) {
-            outputDir.mkdirs();
+            boolean created = outputDir.mkdirs();
+            if (!created) throw new MojoExecutionException("Failed to create output directory");
         }
 
         try {
@@ -73,7 +74,11 @@ public class LinkAssetsMojo
 
             // recreate link if it exists
             if (linkTarget.exists()) {
-                linkTarget.delete();
+                boolean deleted = linkTarget.delete();
+                if (!deleted) {
+                    throw new MojoExecutionException(
+                            "Failed to delete " + linkName + " prior to linking asset directory");
+                }
             }
 
             getLog().debug("Linking " + assetDirectory + " to " + linkTarget);

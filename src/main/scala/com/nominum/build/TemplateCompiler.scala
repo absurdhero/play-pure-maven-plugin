@@ -59,7 +59,7 @@ class TemplateCompiler(classpath: Seq[File], forJava: Boolean) {
   }
 
   def compile(sourceDirectory: File, generatedDir: File) = {
-    val classLoader = new java.net.URLClassLoader(classpath.map(_.toURL).toArray, this.getClass.getClassLoader)
+    val classLoader = new java.net.URLClassLoader(classpath.map(_.toURI.toURL).toArray, this.getClass.getClassLoader)
     val compiler = classLoader.loadClass("play.templates.ScalaTemplateCompiler")
     val generatedSource = classLoader.loadClass("play.templates.GeneratedSource")
 

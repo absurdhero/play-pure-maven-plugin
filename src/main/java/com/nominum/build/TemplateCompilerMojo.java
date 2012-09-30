@@ -74,7 +74,8 @@ public class TemplateCompilerMojo
         project.addCompileSourceRoot(outputDir.getAbsolutePath());
 
         if (!outputDir.exists()) {
-            outputDir.mkdirs();
+            boolean created = outputDir.mkdirs();
+            if (!created) throw new MojoExecutionException("Failed to create output directory");
         }
 
         PlayRoutesCompiler routesCompiler = new PlayRoutesCompiler();
