@@ -92,7 +92,7 @@ In the plugins section:
 ::
 
    <plugin>
-       <groupId>com.nominum.build</groupId>
+       <groupId>net.raboof.play</groupId>
        <artifactId>play-pure-maven-plugin</artifactId>
        <version>1.1-SNAPSHOT</version>
        <executions>
