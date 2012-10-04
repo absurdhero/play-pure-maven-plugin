@@ -86,7 +86,6 @@ class TemplateCompiler(classpath: Seq[File], forJava: Boolean) {
           compile.invoke(null, template, sourceDirectory, generatedDir, "play.api.templates.Html", "play.api.templates.HtmlFormat", "import play.api.templates._\nimport play.api.templates.PlayMagic._" + "\nimport " + templatesImport.mkString("\nimport "))
         } catch {
           case e: java.lang.reflect.InvocationTargetException => {
-            System.err.println("Compilation failed for %s".format(template))
             throw e.getTargetException
           }
         }

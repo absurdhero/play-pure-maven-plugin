@@ -30,7 +30,7 @@ class PlayRoutesCompiler {
     try {
       RoutesCompiler.compile(routesFile, generatedDir, additionalImports)
     } catch {
-      case e: RoutesCompilationError => throw new MojoExecutionException("Error Compiling routes", e)
+      case e: RoutesCompilationError => throw new MojoExecutionException("Error in routes file on line " + e.line, e)
     }
     (filesInDirStartingWith(generatedDir, "routes_*") ++ Array(new File(generatedDir, "routes.java"))).map(_.getAbsoluteFile)
 

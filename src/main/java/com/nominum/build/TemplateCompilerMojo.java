@@ -18,7 +18,9 @@ package com.nominum.build;
 
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
+import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.project.MavenProject;
+import play.templates.TemplateCompilationError;
 import scala.collection.JavaConversions;
 
 import java.io.File;
@@ -68,8 +70,13 @@ public class TemplateCompilerMojo
 
     public void execute()
         throws MojoExecutionException {
+        try {
         compileTemplatesAndRoutes(absolutePath(confDirectory),
                 absolutePath(generatedSourcesDirectory), project, absolutePath(sourceDirectory));
+        } catch (TemplateCompilationError e) {
+            String msg = String.format("Error in template %s:%s %s", e.source().getPath(), e.line(), e.message());
+            throw new MojoExecutionException(msg);
+        }
     }
 
     /** This static method is usable by other Mojos */
@@ -85,21 +92,16 @@ public class TemplateCompilerMojo
         routesCompiler.compile(confDirectory, outputDir,
                 new scala.collection.mutable.ArrayBuffer<String>());
 
-        try {
-            List<File> classpathFiles = new ArrayList<File>();
-            String classpath = System.getProperty("java.class.path");
-            for (String path : classpath.split(":")) {
-                classpathFiles.add(new File(path));
-            }
+        List<File> classpathFiles = new ArrayList<File>();
+        String classpath = System.getProperty("java.class.path");
+        for (String path : classpath.split(":")) {
+            classpathFiles.add(new File(path));
+        }
 
-            TemplateCompiler templateCompiler =
-                    new TemplateCompiler(JavaConversions.asScalaBuffer(classpathFiles).toList(), true);
-            templateCompiler.compile(sourceDir, outputDir);
-        }
-        catch (Exception e)
-        {
-            throw new MojoExecutionException( "Error compiling template files", e );
-        }
+        TemplateCompiler templateCompiler =
+                new TemplateCompiler(JavaConversions.asScalaBuffer(classpathFiles).toList(), true);
+        templateCompiler.compile(sourceDir, outputDir);
+
     }
 
     /** Convert Files with relative paths to be relative from the project basedir. **/
