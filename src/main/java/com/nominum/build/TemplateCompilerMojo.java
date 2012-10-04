@@ -53,7 +53,7 @@ public class TemplateCompilerMojo
     private File generatedSourcesDirectory;
 
     /**
-     * Location of the template source files.
+     * Location of the source files.
      * @parameter expression="${pom.build.sourceDirectory}"
      * @required
      */
@@ -68,9 +68,12 @@ public class TemplateCompilerMojo
 
     public void execute()
         throws MojoExecutionException {
-        File outputDir = absolutePath(generatedSourcesDirectory);
-        File sourceDir = absolutePath(sourceDirectory);
+        compileTemplatesAndRoutes(absolutePath(confDirectory),
+                absolutePath(generatedSourcesDirectory), project, absolutePath(sourceDirectory));
+    }
 
+    /** This static method is usable by other Mojos */
+    public static void compileTemplatesAndRoutes(File confDirectory, File outputDir, MavenProject project, File sourceDir) throws MojoExecutionException {
         project.addCompileSourceRoot(outputDir.getAbsolutePath());
 
         if (!outputDir.exists()) {
@@ -79,7 +82,7 @@ public class TemplateCompilerMojo
         }
 
         PlayRoutesCompiler routesCompiler = new PlayRoutesCompiler();
-        routesCompiler.compile(absolutePath(confDirectory), outputDir,
+        routesCompiler.compile(confDirectory, outputDir,
                 new scala.collection.mutable.ArrayBuffer<String>());
 
         try {
