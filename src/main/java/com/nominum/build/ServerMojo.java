@@ -11,7 +11,10 @@ import org.apache.maven.project.MavenProjectHelper;
 import play.api.Mode;
 import play.core.server.NettyServer;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStreamReader;
 
 /**
  * This mojo monitors source files and recompiles and reloads the development server automatically.
@@ -118,7 +121,10 @@ public class ServerMojo extends AbstractMojo implements FileListener {
                     throw new MojoExecutionException("Cannot run the development server", e);
                 }
             }
+
             // just wait around until killed
+            invokeScalaCC();
+
             while (true) {
                 Thread.sleep(10000);
             }
@@ -131,6 +137,53 @@ public class ServerMojo extends AbstractMojo implements FileListener {
         }
     }
 
+    class StreamConsumer extends Thread {
+
+        private Process process;
+
+        public StreamConsumer(Process process) {
+            this.process = process;
+        }
+
+        @Override
+        public void run() {
+            try {
+                InputStreamReader inputStream = new InputStreamReader(process.getInputStream());
+                BufferedReader bufferedOut = new BufferedReader(inputStream);
+
+                String line = null;
+                while ((line = bufferedOut.readLine()) != null) {
+                    // HACK filter out noise from slightly broken 3.1.0 version of the plugin
+                    if (line.equals("[INFO] wait for files to compile...")) continue;
+                    System.out.println(line);
+                }
+            }
+            catch (IOException e) {
+                return;
+            }
+        }
+    }
+
+    private void invokeScalaCC() throws MojoExecutionException {
+        ProcessBuilder processBuilder = new ProcessBuilder("mvn", "scala:cc");
+        processBuilder.redirectErrorStream(true);
+        try {
+            final Process scalaCC = processBuilder.start();
+            StreamConsumer streamConsumer = new StreamConsumer(scalaCC);
+            streamConsumer.start();
+            scalaCC.waitFor();
+
+            Runtime.getRuntime().addShutdownHook(new Thread() {
+                public void run() {
+                    scalaCC.destroy();
+                }
+            });
+        } catch (IOException e) {
+            throw new MojoExecutionException("Unable to find or run \"mvn\" (maven executable)", e);
+        } catch (InterruptedException e) {
+            throw new MojoExecutionException("Running scala:cc Failed", e);
+        }
+    }
     private void setupMonitor() throws FileSystemException {
         getLog().info("Set up file monitor on " + sourceDirectory);
         FileSystemManager fsManager = VFS.getManager();
@@ -139,6 +192,9 @@ public class ServerMojo extends AbstractMojo implements FileListener {
         DefaultFileMonitor fm = new DefaultFileMonitor(this);
         fm.setRecursive(true);
         fm.addFile(dir);
+        FileObject routes = fsManager.resolveFile(new File(confDirectory, "routes").getAbsolutePath());
+        fm.addFile(routes);
+
         fm.start();
     }
 
