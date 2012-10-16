@@ -16,6 +16,7 @@ package com.nominum.build;
  * limitations under the License.
  */
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.project.MavenProject;
@@ -51,7 +52,7 @@ public class LinkAssetsMojo
     private File outputDirectory;
 
     /**
-     * Location of the play conf directory.
+     * Location of the assets directory.
      * @parameter expression="${project.basedir}/public"
      * @required
      */
@@ -68,28 +69,28 @@ public class LinkAssetsMojo
             if (!created) throw new MojoExecutionException("Failed to create output directory");
         }
 
-        try {
-            String linkName = assetDir.getAbsolutePath().substring(assetDir.getParent().length() + 1);
-            File linkTarget = new File(outputDir, linkName);
+        String linkName = assetDir.getAbsolutePath().substring(assetDir.getParent().length() + 1);
+        File linkTarget = new File(outputDir, linkName);
 
-            // recreate link if it exists
-            if (linkTarget.exists()) {
-                boolean deleted = linkTarget.delete();
-                if (!deleted) {
-                    throw new MojoExecutionException(
-                            "Failed to delete " + linkName + " prior to linking asset directory");
-                }
+        // recreate link if it exists
+        if (linkTarget.exists()) {
+            boolean deleted = linkTarget.delete();
+            if (!deleted) {
+                throw new MojoExecutionException(
+                        "Failed to delete " + linkName + " prior to linking asset directory");
             }
+        }
 
-            getLog().debug("Linking " + assetDirectory + " to " + linkTarget);
+        String[] command = new String[] {"ln", "-s", assetDir.getAbsolutePath(), linkTarget.getAbsolutePath()};
 
-            String[] command = new String[] {"ln", "-s", assetDir.getAbsolutePath(), linkTarget.getAbsolutePath()};
+        try {
+            getLog().info("Linking " + assetDirectory + " to " + linkTarget);
+
             Process proc = Runtime.getRuntime().exec(command, null, new File("."));
             int exitVal = proc.waitFor();
             if (exitVal != 0) {
-                throw new MojoExecutionException("linking assets directory failed");
+                throw new MojoExecutionException("linking assets directory failed. Command: \"" + StringUtils.join(command, " ") + "\"");
             }
-
         } catch (InterruptedException e) {
             throw new MojoExecutionException("link command failed", e);
         } catch (IOException e) {
