@@ -18,7 +18,6 @@ package com.nominum.build;
 
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
-import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.project.MavenProject;
 import play.templates.TemplateCompilationError;
 import scala.collection.JavaConversions;

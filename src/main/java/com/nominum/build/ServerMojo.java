@@ -1,6 +1,5 @@
 package com.nominum.build;
 
-import com.nominum.play.StaticDevApplication;
 import org.apache.commons.vfs2.*;
 import org.apache.commons.vfs2.impl.DefaultFileMonitor;
 import org.apache.maven.plugin.AbstractMojo;
@@ -8,8 +7,6 @@ import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.project.MavenProject;
 import org.apache.maven.project.MavenProjectHelper;
-import play.api.Mode;
-import play.core.server.NettyServer;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -72,25 +69,6 @@ public class ServerMojo extends AbstractMojo implements FileListener {
      */
     public File baseDirectory;
 
-    /**
-     * @parameter default-value="true"
-     */
-    protected boolean runServer;
-
-    /**
-     * @parameter default-value="9000"
-     */
-    protected int serverPort;
-
-    /**
-     * @parameter default-value="0.0.0.0"
-     */
-    protected String serverListenAddress;
-
-    /**
-     * The Internal Play Development Server
-     */
-    protected NettyServer server;
 
     public void execute() throws MojoExecutionException, MojoFailureException {
 
@@ -103,37 +81,18 @@ public class ServerMojo extends AbstractMojo implements FileListener {
         String MESSAGE = "You're running the watch mode. Modified templates and " +
                 "routes will be processed automatically. \n" +
                 "To leave the watch mode, just hit CTRL+C.\n";
-        if (runServer) {
-            MESSAGE += "The play development server is enabled. " +
-                    "It is accessible from http://localhost:" + serverPort + "/. \n";
 
-        }
         getLog().info(MESSAGE);
 
-
-        // XXX start up and compile everything
-
         try {
-            if (runServer) {
-                try {
-                    startServer();
-                } catch (Exception e) {
-                    throw new MojoExecutionException("Cannot run the development server", e);
-                }
-            }
-
-            // just wait around until killed
             invokeScalaCC();
 
+            // just wait around until killed
             while (true) {
                 Thread.sleep(10000);
             }
         } catch (InterruptedException e) {
             /* exit normally */
-        } finally {
-            if (runServer) {
-                stopServer();
-            }
         }
     }
 
@@ -154,7 +113,8 @@ public class ServerMojo extends AbstractMojo implements FileListener {
                 String line = null;
                 while ((line = bufferedOut.readLine()) != null) {
                     // HACK filter out noise from slightly broken 3.1.0 version of the plugin
-                    if (line.equals("[INFO] wait for files to compile...")) continue;
+                    if (line.equals("[INFO] wait for files to compile...")
+                     || line.contains("Compile success at")) continue;
                     System.out.println(line);
                 }
             }
@@ -171,19 +131,35 @@ public class ServerMojo extends AbstractMojo implements FileListener {
             final Process scalaCC = processBuilder.start();
             StreamConsumer streamConsumer = new StreamConsumer(scalaCC);
             streamConsumer.start();
-            scalaCC.waitFor();
+            try {
+                scalaCC.waitFor();
+            } finally {
+                stopProcess(scalaCC);
+            }
 
             Runtime.getRuntime().addShutdownHook(new Thread() {
                 public void run() {
-                    scalaCC.destroy();
+                    stopProcess(scalaCC);
                 }
             });
+
         } catch (IOException e) {
             throw new MojoExecutionException("Unable to find or run \"mvn\" (maven executable)", e);
         } catch (InterruptedException e) {
             throw new MojoExecutionException("Running scala:cc Failed", e);
         }
     }
+
+    private void stopProcess(Process process) {
+        try {
+            process.getInputStream().close();
+            process.getOutputStream().close();
+            process.getErrorStream().close();
+        } catch (IOException e) {
+        }
+        process.destroy();
+    }
+
     private void setupMonitor() throws FileSystemException {
         getLog().info("Set up file monitor on " + sourceDirectory);
         FileSystemManager fsManager = VFS.getManager();
@@ -198,50 +174,26 @@ public class ServerMojo extends AbstractMojo implements FileListener {
         fm.start();
     }
 
-    private void startServer() {
-        server = new NettyServer(
-                new StaticDevApplication(baseDirectory),
-                serverPort,
-                serverListenAddress,
-                Mode.Dev());
-    }
-
-    private void stopServer() {
-        server.stop();
-    }
-
-    private void restartServer() {
-        if (runServer) {
-            stopServer();
-            startServer();
-        }
-    }
-
     private void compileTemplatesAndRoutes() throws MojoExecutionException {
         TemplateCompilerMojo.compileTemplatesAndRoutes(confDirectory,
                 generatedSourcesDirectory, project, sourceDirectory);
     }
 
     public void fileCreated(FileChangeEvent event) throws Exception {
-        getLog().info("New file found " + event.getFile().getName().getBaseName());
+        getLog().debug("New file found " + event.getFile().getName().getBaseName());
 
         compileTemplatesAndRoutes();
-        restartServer();
-
     }
 
     public void fileDeleted(FileChangeEvent event) throws Exception {
-        getLog().info("File " + event.getFile().getName().getBaseName() + " deleted");
+        getLog().debug("File " + event.getFile().getName().getBaseName() + " deleted");
 
-        // TODO delete the corresponding class file and reload (if server running)
-        restartServer();
-
+        // TODO delete the corresponding class file
     }
 
     public void fileChanged(FileChangeEvent event) throws Exception {
-        getLog().info("File changed: " + event.getFile().getName().getBaseName());
+        getLog().debug("File changed: " + event.getFile().getName().getBaseName());
 
         compileTemplatesAndRoutes();
-        restartServer();
     }
 }
