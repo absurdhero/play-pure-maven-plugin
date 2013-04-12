@@ -1,3 +1,11 @@
+Port to Play Framework 2.1 
+--------------------------
+Includes play2.1.1 routes-compiler and templates-compiler
+for compilation against scala 2.10
+
+Original README following...
+
+
 Play Pure-Maven Plugin
 ======================
 
@@ -7,7 +15,7 @@ The plugin provides a solution to organizations who already have maven experienc
 would like to create a web application with Play Framework that plays well
 with other modules managed by maven.
 
-Currently, the plugin simply allows maven to compile *.scala.html,
+Currently, the plugin simply allows maven to compile `*`.scala.html,
 compile the routes file, and includes the "public" assets directory in your build.
 
 This plugin is easy to test out since it is possible to add it to

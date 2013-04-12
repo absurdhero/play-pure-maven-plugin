@@ -17,8 +17,8 @@ package com.nominum.build
  */
 
 import java.io.File
-import play.core.Router.RoutesCompiler
-import play.core.Router.RoutesCompiler._
+import play.router._
+import play.router.RoutesCompiler._
 import com.nominum.build.Util.filesInDirStartingWith
 import org.apache.maven.plugin.MojoExecutionException
 

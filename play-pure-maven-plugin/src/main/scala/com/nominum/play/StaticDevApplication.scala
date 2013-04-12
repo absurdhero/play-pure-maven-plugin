@@ -2,7 +2,7 @@ package com.nominum.play
 
 import play.core._
 import java.io.File
-import play.api.{Play, Mode, Application}
+import play.api.{Play, Mode, DefaultApplication}
 
 /**
  * Creates and initializes an Application in development mode.
@@ -10,7 +10,7 @@ import play.api.{Play, Mode, Application}
  */
 class StaticDevApplication(applicationPath: File) extends ApplicationProvider {
 
-  val application = new Application(applicationPath, this.getClass.getClassLoader, None, Mode.Dev)
+  val application = new DefaultApplication(applicationPath, this.getClass.getClassLoader, None, Mode.Dev)
 
   Play.start(application)
 
