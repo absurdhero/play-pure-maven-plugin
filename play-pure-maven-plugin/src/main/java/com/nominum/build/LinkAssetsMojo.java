@@ -64,6 +64,11 @@ public class LinkAssetsMojo
         File outputDir = absolutePath(outputDirectory);
         File assetDir = absolutePath(assetDirectory);
 
+	if (!assetDir.exists()) {
+		getLog().info("assets directory not found, no assets to link");
+		return;
+	}
+
         if (!outputDir.exists()) {
             boolean created = outputDir.mkdirs();
             if (!created) throw new MojoExecutionException("Failed to create output directory");
