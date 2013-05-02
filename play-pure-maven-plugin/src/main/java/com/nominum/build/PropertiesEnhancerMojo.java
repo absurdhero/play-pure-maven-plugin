@@ -52,24 +52,22 @@ public class PropertiesEnhancerMojo extends AbstractMojo {
     private File outputDirectory;
 
     public void execute() throws MojoExecutionException {
-        try {
-        	enhanceProperties(project, absolutePath(outputDirectory));
-        } catch (TemplateCompilationError e) {
-            String msg = String.format("Error in template %s:%s %s", e.source().getPath(), e.line(), e.message());
-            throw new MojoExecutionException(msg);
-        }
+        String classpath = System.getProperty("java.class.path");
+        classpath = outputDirectory.getAbsolutePath() + ":" + classpath;
+        System.out.println("classpath: "+classpath);
+        enhanceProperties(project, absolutePath(outputDirectory), classpath);
     }
 
     
     /** This static method is usable by other Mojos */
-    public static void enhanceProperties(MavenProject project, File targetDir) throws MojoExecutionException {
+    public static void enhanceProperties(MavenProject project, File targetDir, String classpath) throws MojoExecutionException {
     	
-        String classpath = System.getProperty("java.class.path");
-        
 		//get all the files from a directory
         File[] fList = targetDir.listFiles();
+	System.out.println("Directory: "+targetDir.getAbsolutePath());
         for (File classFile : fList){
             if (classFile.isFile() && classFile.getName().endsWith(".class")){
+		System.out.println("Processing "+classFile.getName());
             	try {
 					PropertiesEnhancer.generateAccessors(classpath, classFile);
 					PropertiesEnhancer.rewriteAccess(classpath, classFile);
@@ -77,7 +75,7 @@ public class PropertiesEnhancerMojo extends AbstractMojo {
 					throw new MojoExecutionException("Error while enhancing properties on "+classFile.getAbsolutePath(),e);
 				}
             } else if (classFile.isDirectory()){
-                enhanceProperties(project, classFile);
+                enhanceProperties(project, classFile, classpath);
             }
         }
     }
