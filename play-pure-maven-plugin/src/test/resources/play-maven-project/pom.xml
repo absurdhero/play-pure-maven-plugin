@@ -92,6 +92,26 @@
       	<groupId>org.avaje</groupId>
       	<artifactId>ebean-maven-enhancement-plugin</artifactId>
        	<version>2.8.1</version>
+        <dependencies>
+        <dependency>
+            <groupId>play</groupId>
+            <artifactId>play_2.10</artifactId>
+            <version>2.1.1</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>play</groupId>
+            <artifactId>play-java_2.10</artifactId>
+            <version>2.1.1</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>play</groupId>
+            <artifactId>play-java-ebean_2.10</artifactId>
+            <version>2.1.1</version>
+            <scope>compile</scope>
+        </dependency>
+	</dependencies>
 	  	<executions>
 	  	    <execution>
 	  	       <id>main</id>
@@ -101,7 +121,7 @@
 	  	       </goals>
 	  	       <configuration>
 	  	       	  <packages>models</packages>
-	  	       	  <transformArgs>debug=4</transformArgs>
+	  	       	  <transformArgs>debug=2</transformArgs>
 	  	       	  <classSource>${project.build.outputDirectory}</classSource>
 	  	       	  <classDestination>${project.build.outputDirectory}</classDestination>
 	  	       	  <classpath>${maven.compile.classpath}</classpath>
