@@ -82,11 +82,33 @@
                   <goals>
                       <goal>compile-templates</goal>
                       <goal>link-assets</goal>
+                      <goal>properties-enhance</goal>
                   </goals>
               </execution>
           </executions>
       </plugin>
 
+	  <plugin>
+      	<groupId>org.avaje</groupId>
+      	<artifactId>ebean-maven-enhancement-plugin</artifactId>
+       	<version>2.8.1</version>
+	  	<executions>
+	  	    <execution>
+	  	       <id>main</id>
+	  	       <phase>process-classes</phase>
+	  	       <goals>
+	  	         <goal>enhance</goal>
+	  	       </goals>
+	  	       <configuration>
+	  	       	  <packages>models</packages>
+	  	       	  <transformArgs>debug=4</transformArgs>
+	  	       	  <classSource>${project.build.outputDirectory}</classSource>
+	  	       	  <classDestination>${project.build.outputDirectory}</classDestination>
+	  	       	  <classpath>${maven.compile.classpath}</classpath>
+	  	       </configuration>
+	  	    </execution>
+	  	</executions>
+	  </plugin>
     </plugins>
   </build>
 
@@ -104,6 +126,12 @@
             <version>2.1.1</version>
             <scope>compile</scope>
         </dependency>
+        <dependency>
+            <groupId>play</groupId>
+            <artifactId>play-java-ebean_2.10</artifactId>
+            <version>2.1.1</version>
+            <scope>compile</scope>
+        </dependency>        
         <dependency>
             <groupId>play</groupId>
             <artifactId>templates_2.10</artifactId>
