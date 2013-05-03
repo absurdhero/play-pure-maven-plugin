@@ -17,18 +17,42 @@ package com.nominum.build;
  */
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
+
+import javassist.CannotCompileException;
+import javassist.ClassPool;
+import javassist.CtBehavior;
+import javassist.CtClass;
+import javassist.CtField;
+import javassist.CtMethod;
+import javassist.Modifier;
+import javassist.NotFoundException;
+import javassist.bytecode.AnnotationsAttribute;
+import javassist.bytecode.SignatureAttribute;
+import javassist.bytecode.annotation.Annotation;
+import javassist.bytecode.annotation.MemberValue;
+import javassist.expr.ExprEditor;
+import javassist.expr.FieldAccess;
 
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.project.MavenProject;
+
+import play.core.enhancers.PropertiesEnhancer.GeneratedAccessor;
+import play.core.enhancers.PropertiesEnhancer.GeneratedGetAccessor;
+import play.core.enhancers.PropertiesEnhancer.GeneratedSetAccessor;
+import play.core.enhancers.PropertiesEnhancer.RewrittenAccessor;
 
 /**
  * Provides property support for Java classes via byte code enchancement.
@@ -99,8 +123,11 @@ public class PropertiesEnhancerMojo extends AbstractMojo {
 		}
 		String classpath = buffer.toString();
 		classpath = outputDirectory.getAbsolutePath() + System.getProperty("path.separator") + classpath;
-		getLog().info("classpath: " + classpath);
+		getLog().debug("classpath: " + classpath);
+		getLog().info("Generating getters and setters.");
 		enhanceProperties(project, absolutePath(outputDirectory), classpath);
+		getLog().info("Rewriting property accessors.");
+		rewriteAccess(project, absolutePath(outputDirectory), classpath);
 		if (originalSystemProperties != null) {
 			System.setProperties( originalSystemProperties );
 		}
@@ -115,16 +142,32 @@ public class PropertiesEnhancerMojo extends AbstractMojo {
 		getLog().debug("Directory: " + targetDir.getAbsolutePath());
 		for (File classFile : fList) {
 			if (classFile.isFile() && classFile.getName().endsWith(".class")) {
-				getLog().debug("Processing " + classFile.getName());
 				try {
-					play.core.enhancers.PropertiesEnhancer.generateAccessors(classpath, classFile);
-					play.core.enhancers.PropertiesEnhancer.rewriteAccess(classpath, classFile);
+					generateAccessors(classpath, classFile);
 				} catch (Exception e) {
-					throw new MojoExecutionException("Error while enhancing properties on "
+					throw new MojoExecutionException("Error while generating accessors on "
 							+ classFile.getAbsolutePath(), e);
 				}
 			} else if (classFile.isDirectory()) {
 				enhanceProperties(project, classFile, classpath);
+			}
+		}
+	}
+	
+	public void rewriteAccess(MavenProject project, File targetDir, String classpath) throws MojoExecutionException {
+		// get all the files from a directory
+		File[] fList = targetDir.listFiles();
+		getLog().debug("Directory: " + targetDir.getAbsolutePath());		
+		for (File classFile : fList) {
+			if (classFile.isFile() && classFile.getName().endsWith(".class")) {
+				try {
+					rewriteAccess(classpath, classFile);
+				} catch (Exception e) {
+					throw new MojoExecutionException("Error while rewriting accessors on "
+							+ classFile.getAbsolutePath(), e);
+				}
+			} else if (classFile.isDirectory()) {
+				rewriteAccess(project, classFile, classpath);
 			}
 		}
 	}
@@ -242,4 +285,255 @@ public class PropertiesEnhancerMojo extends AbstractMojo {
 		getLog().debug("Collected project artifacts " + artifacts);
 		getLog().debug("Collected project classpath " + theClasspathFiles);
 	}
+	
+	
+	
+    public void generateAccessors(String classpath, File classFile) throws Exception {
+    	
+        ClassPool classPool = new ClassPool();
+        classPool.appendSystemPath();
+        classPool.appendPathList(classpath);
+        
+        FileInputStream is = new FileInputStream(classFile);
+        try {
+            CtClass ctClass = classPool.makeClass(is);
+            if(hasAnnotation(ctClass, GeneratedAccessor.class)) {
+                is.close();
+                getLog().debug(ctClass.getName() + " getters/setters generated, closing file");
+                return;
+            }
+            for (CtField ctField : ctClass.getDeclaredFields()) {
+                if(isProperty(ctField)) {
+                    
+                	getLog().debug("Found property: "+ctField.getName());
+                	
+                    // Property name
+                    String propertyName = ctField.getName().substring(0, 1).toUpperCase() + ctField.getName().substring(1);
+                    String getter = "get" + propertyName;
+                    String setter = "set" + propertyName;
+                    
+                    SignatureAttribute signature = ((SignatureAttribute)ctField.getFieldInfo().getAttribute(SignatureAttribute.tag));
+
+                    try {
+                        CtMethod ctMethod = ctClass.getDeclaredMethod(getter);
+                        getLog().debug("Found method "+ctMethod.getName());
+                        if (ctMethod.getParameterTypes().length > 0 || Modifier.isStatic(ctMethod.getModifiers())) {
+                            throw new NotFoundException("it's not a getter !");
+                        }
+                    } catch (NotFoundException noGetter) {
+                        // Create getter
+                    	CtMethod getMethod = CtMethod.make("public " + ctField.getType().getName() + " " + getter + "() { return this." + ctField.getName() + "; }", ctClass);
+                    	getLog().debug("Generating GETTER for "+getMethod.getName() + " " +getMethod.getSignature());
+                        ctClass.addMethod(getMethod);
+                        createAnnotation(getAnnotations(getMethod), GeneratedAccessor.class);
+                        createAnnotation(getAnnotations(ctField), GeneratedGetAccessor.class);
+                        if(signature != null) {
+                            String fieldSignature = signature.getSignature();
+                            String getMethodSignature = "()" + fieldSignature;
+                            getMethod.getMethodInfo().addAttribute(
+                                new SignatureAttribute(getMethod.getMethodInfo().getConstPool(), getMethodSignature)
+                            );
+                        }
+                    }
+
+                    try {
+                        CtMethod ctMethod = ctClass.getDeclaredMethod(setter);
+                        getLog().debug("Found method "+ctMethod.getName());
+                        if (ctMethod.getParameterTypes().length != 1 || !ctMethod.getParameterTypes()[0].equals(ctField.getType()) || Modifier.isStatic(ctMethod.getModifiers())) {
+                            throw new NotFoundException("it's not a setter !");
+                        }
+                    } catch (NotFoundException noSetter) {
+                        // Create setter
+                        CtMethod setMethod = CtMethod.make("public void " + setter + "(" + ctField.getType().getName() + " value) { this." + ctField.getName() + " = value; }", ctClass);
+                        getLog().debug("Generating SETTER for "+setMethod.getName() + " "+setMethod.getSignature());
+                        ctClass.addMethod(setMethod);
+                        createAnnotation(getAnnotations(setMethod), GeneratedAccessor.class);
+                        createAnnotation(getAnnotations(ctField), GeneratedSetAccessor.class);
+                        if(signature != null) {
+                            String fieldSignature = signature.getSignature();
+                            String setMethodSignature = "(" + fieldSignature + ")V";
+                            setMethod.getMethodInfo().addAttribute(
+                                new SignatureAttribute(setMethod.getMethodInfo().getConstPool(), setMethodSignature)
+                            );
+                        }
+                    }
+                    
+                }
+                
+            }
+            
+            createAnnotation(getAnnotations(ctClass), GeneratedAccessor.class);
+            
+            is.close();
+            FileOutputStream os = new FileOutputStream(classFile);
+            os.write(ctClass.toBytecode());
+            os.close();
+            
+        } catch(Exception e) {
+            e.printStackTrace();
+            try {
+                is.close();
+            } catch(Exception ex) {
+                throw ex;
+            }
+            throw e;
+        }
+    }
+    
+    public void rewriteAccess(String classpath, File classFile) throws Exception {
+    	
+        ClassPool classPool = new ClassPool();
+        classPool.appendSystemPath();
+        classPool.appendPathList(classpath);
+        
+        FileInputStream is = new FileInputStream(classFile);
+        try {
+            final CtClass ctClass = classPool.makeClass(is);
+            if(hasAnnotation(ctClass, RewrittenAccessor.class)) {
+                is.close();
+                getLog().debug(ctClass.getName() + " already rewritten, closing file");
+                return;
+            }
+            
+            for (final CtBehavior ctMethod : ctClass.getDeclaredBehaviors()) {
+                ctMethod.instrument(new ExprEditor() {
+
+                    @Override
+                    public void edit(FieldAccess fieldAccess) throws CannotCompileException {
+                        try {
+
+                            // Has accessor
+                            if (isAccessor(fieldAccess.getField())) {
+                                
+                                String propertyName = null;
+                                if (fieldAccess.getField().getDeclaringClass().equals(ctMethod.getDeclaringClass())
+                                    || ctMethod.getDeclaringClass().subclassOf(fieldAccess.getField().getDeclaringClass())) {
+                                    if ((ctMethod.getName().startsWith("get") || ctMethod.getName().startsWith("set")) && ctMethod.getName().length() > 3) {
+                                        propertyName = ctMethod.getName().substring(3);
+                                        propertyName = propertyName.substring(0, 1).toLowerCase() + propertyName.substring(1);
+                                    }
+                                }
+
+                                if (propertyName == null || !propertyName.equals(fieldAccess.getFieldName())) {
+                                    
+                                    String getSet = fieldAccess.getFieldName().substring(0,1).toUpperCase() + fieldAccess.getFieldName().substring(1);
+                                    
+                                    if (fieldAccess.isReader() && hasAnnotation(fieldAccess.getField(), GeneratedGetAccessor.class)) {
+                                        // Rewrite read access
+                                        fieldAccess.replace("$_ = $0.get" + getSet + "();");
+                                        getLog().debug(ctClass.getName()+": replacing "+propertyName+" field read access with get" + getSet);
+                                    } else if (fieldAccess.isWriter() && hasAnnotation(fieldAccess.getField(), GeneratedSetAccessor.class)) {
+                                        // Rewrite write access
+                                        fieldAccess.replace("$0.set" + getSet + "($1);");
+                                        getLog().debug(ctClass.getName()+": replacing "+propertyName+" field write access with set" + getSet);
+                                    }
+                                }
+                            }
+
+                        } catch (Exception e) {
+                        	getLog().error("Error while generating accessors: ",e);
+                        }
+                    }
+                });
+            }
+            
+            createAnnotation(getAnnotations(ctClass), RewrittenAccessor.class);
+            
+            is.close();
+            FileOutputStream os = new FileOutputStream(classFile);
+            os.write(ctClass.toBytecode());
+            os.close();
+            
+        } catch(Exception e) {
+            e.printStackTrace();
+            try {
+                is.close();
+            } catch(Exception ex) {
+                throw ex;
+            }
+            throw e;
+        }
+    }
+    static boolean isProperty(CtField ctField) {
+        if (ctField.getName().equals(ctField.getName().toUpperCase()) || ctField.getName().substring(0, 1).equals(ctField.getName().substring(0, 1).toUpperCase())) {
+            return false;
+        }
+        return Modifier.isPublic(ctField.getModifiers())
+                && !Modifier.isFinal(ctField.getModifiers())
+                && !Modifier.isStatic(ctField.getModifiers());
+    }
+    
+    static boolean isAccessor(CtField ctField) throws Exception {
+        return hasAnnotation(ctField, GeneratedGetAccessor.class) || hasAnnotation(ctField, GeneratedSetAccessor.class);
+    }
+    
+    // --
+    
+    /**
+     * Test if a class has the provided annotation 
+     */
+    static boolean hasAnnotation(CtClass ctClass, Class<? extends java.lang.annotation.Annotation> annotationType) throws ClassNotFoundException {
+        return getAnnotations(ctClass).getAnnotation(annotationType.getName()) != null;
+    }
+
+    /**
+     * Test if a field has the provided annotation 
+     */    
+    static boolean hasAnnotation(CtField ctField, Class<? extends java.lang.annotation.Annotation> annotationType) throws ClassNotFoundException {
+        return getAnnotations(ctField).getAnnotation(annotationType.getName()) != null;
+    }
+    
+    /**
+     * Retrieve all class annotations.
+     */
+    static AnnotationsAttribute getAnnotations(CtClass ctClass) {
+        AnnotationsAttribute annotationsAttribute = (AnnotationsAttribute) ctClass.getClassFile().getAttribute(AnnotationsAttribute.visibleTag);
+        if (annotationsAttribute == null) {
+            annotationsAttribute = new AnnotationsAttribute(ctClass.getClassFile().getConstPool(), AnnotationsAttribute.visibleTag);
+            ctClass.getClassFile().addAttribute(annotationsAttribute);
+        }
+        return annotationsAttribute;
+    }
+    
+    /**
+     * Retrieve all field annotations.
+     */    
+    static AnnotationsAttribute getAnnotations(CtField ctField) {
+        AnnotationsAttribute annotationsAttribute = (AnnotationsAttribute) ctField.getFieldInfo().getAttribute(AnnotationsAttribute.visibleTag);
+        if (annotationsAttribute == null) {
+            annotationsAttribute = new AnnotationsAttribute(ctField.getFieldInfo().getConstPool(), AnnotationsAttribute.visibleTag);
+            ctField.getFieldInfo().addAttribute(annotationsAttribute);
+        }
+        return annotationsAttribute;
+    }
+
+    /**
+     * Retrieve all method annotations.
+     */    
+    static AnnotationsAttribute getAnnotations(CtMethod ctMethod) {
+        AnnotationsAttribute annotationsAttribute = (AnnotationsAttribute) ctMethod.getMethodInfo().getAttribute(AnnotationsAttribute.visibleTag);
+        if (annotationsAttribute == null) {
+            annotationsAttribute = new AnnotationsAttribute(ctMethod.getMethodInfo().getConstPool(), AnnotationsAttribute.visibleTag);
+            ctMethod.getMethodInfo().addAttribute(annotationsAttribute);
+        }
+        return annotationsAttribute;
+    }
+    
+    /**
+     * Create a new annotation to be dynamically inserted in the byte code.
+     */
+    static void createAnnotation(AnnotationsAttribute attribute, Class<? extends java.lang.annotation.Annotation> annotationType, Map<String, MemberValue> members) {
+    	Annotation annotation = new Annotation(annotationType.getName(), attribute.getConstPool());
+        for (Map.Entry<String, MemberValue> member : members.entrySet()) {
+            annotation.addMemberValue(member.getKey(), member.getValue());
+        }
+        attribute.addAnnotation(annotation);
+    }
+
+    /**
+     * Create a new annotation to be dynamically inserted in the byte code.
+     */    
+    static void createAnnotation(AnnotationsAttribute attribute, Class<? extends java.lang.annotation.Annotation> annotationType) {
+        createAnnotation(attribute, annotationType, new HashMap<String, MemberValue>());
+    }
 }
