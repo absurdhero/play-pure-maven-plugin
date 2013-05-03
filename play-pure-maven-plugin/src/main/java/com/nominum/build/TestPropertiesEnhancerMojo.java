@@ -31,15 +31,15 @@ import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.project.MavenProject;
 
 /**
- * Provides property support for Java classes via byte code enchancement.
+ * Provides property support for Java test classes via byte code enchancement.
  * 
- * @goal properties-enhance
+ * @goal properties-enhance-test
  * 
- * @phase process-classes
+ * @phase process-test-classes
  * 
  * @requiresDependencyResolution compile
  */
-public class PropertiesEnhancerMojo extends AbstractMojo {
+public class TestPropertiesEnhancerMojo extends AbstractMojo {
 
 	/**
 	 * @parameter expression="${project}"
@@ -51,11 +51,11 @@ public class PropertiesEnhancerMojo extends AbstractMojo {
 	/**
 	 * Location of the class files.
 	 * 
-	 * @parameter expression="${project.build.outputDirectory}"
+	 * @parameter expression="${project.build.testOutputDirectory}"
 	 * @required
 	 */
-	private File outputDirectory;
-	
+	private File testOutputDirectory;
+
 	/**
 	 * A list of system properties to be passed. Note: as the execution is not
 	 * forked, some system properties required by the JVM cannot be passed here.
@@ -98,9 +98,9 @@ public class PropertiesEnhancerMojo extends AbstractMojo {
 		  buffer.append(System.getProperty("path.separator"));
 		}
 		String classpath = buffer.toString();
-		classpath = outputDirectory.getAbsolutePath() + System.getProperty("path.separator") + classpath;
+		classpath = testOutputDirectory.getAbsolutePath() + System.getProperty("path.separator") + classpath;
 		getLog().info("classpath: " + classpath);
-		enhanceProperties(project, absolutePath(outputDirectory), classpath);
+		enhanceProperties(project, absolutePath(testOutputDirectory), classpath);
 		if (originalSystemProperties != null) {
 			System.setProperties( originalSystemProperties );
 		}
@@ -117,7 +117,6 @@ public class PropertiesEnhancerMojo extends AbstractMojo {
 			if (classFile.isFile() && classFile.getName().endsWith(".class")) {
 				getLog().debug("Processing " + classFile.getName());
 				try {
-					play.core.enhancers.PropertiesEnhancer.generateAccessors(classpath, classFile);
 					play.core.enhancers.PropertiesEnhancer.rewriteAccess(classpath, classFile);
 				} catch (Exception e) {
 					throw new MojoExecutionException("Error while enhancing properties on "
