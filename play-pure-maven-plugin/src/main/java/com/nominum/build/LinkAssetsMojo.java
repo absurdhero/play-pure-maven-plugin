@@ -88,7 +88,7 @@ public class LinkAssetsMojo extends AbstractMojo {
 		}
 
 		try {
-			getLog().info("Copying assets " + assetDirectory + " to " + copyTarget);
+			getLog().info("Copying assets " + assetDirectory + " to " + copyTarget.getAbsolutePath());
 			FileUtils.copyDirectory(assetDirectory, copyTarget);
 		} catch (IOException e) {
 			throw new MojoExecutionException("Copying assets directory failed. ",e);
@@ -102,11 +102,11 @@ public class LinkAssetsMojo extends AbstractMojo {
 		});
 		getLog().info("found: " + Arrays.toString(directories));
 		if (directories != null) for (String module : directories) {
-			File moduleDir = absolutePath(new File(project.getBasedir(), module));
+			File moduleDir = absolutePath(new File(project.getBasedir(), "modules/"+module));
 			try {
-				FileUtils.copyDirectory(new File(moduleDir, "public"), assetDir);
+				FileUtils.copyDirectory(new File(moduleDir, "public"), copyTarget);
 			} catch (IOException e) {
-				getLog().error("Cannot copy assets from module "+ module +" to "+ assetDir.getAbsolutePath(),e);
+				getLog().error("Cannot copy assets from module "+ moduleDir.getAbsolutePath() +" to "+ copyTarget.getAbsolutePath(),e);
 			}
 		}
 	}
