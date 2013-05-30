@@ -16,15 +16,15 @@ package com.nominum.build;
  * the License.
  */
 
-import org.apache.commons.lang3.StringUtils;
-import org.apache.maven.plugin.AbstractMojo;
-import org.apache.maven.plugin.MojoExecutionException;
-import org.apache.maven.project.MavenProject;
-
 import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.util.Arrays;
+
+import org.apache.commons.io.FileUtils;
+import org.apache.maven.plugin.AbstractMojo;
+import org.apache.maven.plugin.MojoExecutionException;
+import org.apache.maven.project.MavenProject;
 
 /**
  * Link static assets directory into build output directory.
@@ -66,7 +66,7 @@ public class LinkAssetsMojo extends AbstractMojo {
 		File assetDir = absolutePath(assetDirectory);
 
 		if (!assetDir.exists()) {
-			getLog().info("assets directory not found, no assets to link");
+			getLog().info("assets directory not found, no assets to copy");
 			return;
 		}
 
@@ -77,31 +77,21 @@ public class LinkAssetsMojo extends AbstractMojo {
 		}
 
 		String linkName = assetDir.getAbsolutePath().substring(assetDir.getParent().length() + 1);
-		File linkTarget = new File(outputDir, linkName);
+		File copyTarget = new File(outputDir, linkName);
 
 		// recreate link if it exists
-		if (linkTarget.exists()) {
-			boolean deleted = linkTarget.delete();
+		if (copyTarget.exists()) {
+			boolean deleted = copyTarget.delete();
 			if (!deleted) {
 				throw new MojoExecutionException("Failed to delete " + linkName + " prior to linking asset directory");
 			}
 		}
 
-		String[] command = new String[] { "ln", "-s", assetDir.getAbsolutePath(), linkTarget.getAbsolutePath() };
-
 		try {
-			getLog().info("Linking " + assetDirectory + " to " + linkTarget);
-
-			Process proc = Runtime.getRuntime().exec(command, null, new File("."));
-			int exitVal = proc.waitFor();
-			if (exitVal != 0) {
-				throw new MojoExecutionException("linking assets directory failed. Command: \"" + StringUtils.join(command, " ")
-						+ "\"");
-			}
-		} catch (InterruptedException e) {
-			throw new MojoExecutionException("link command failed", e);
+			getLog().info("Copying assets " + assetDirectory + " to " + copyTarget);
+			FileUtils.copyDirectory(assetDirectory, copyTarget);
 		} catch (IOException e) {
-			throw new MojoExecutionException("Unable to execute link command", e);
+			throw new MojoExecutionException("Copying assets directory failed. ",e);
 		}
 
 		getLog().info("Scanning for submodules: ");
@@ -111,8 +101,13 @@ public class LinkAssetsMojo extends AbstractMojo {
 			}
 		});
 		getLog().info("found: " + Arrays.toString(directories));
-		for (String module : directories) {
-			File moduleDir = absolutePath(project.getBasedir(), new File(module));
+		if (directories != null) for (String module : directories) {
+			File moduleDir = absolutePath(new File(project.getBasedir(), module));
+			try {
+				FileUtils.copyDirectory(new File(moduleDir, "public"), assetDir);
+			} catch (IOException e) {
+				getLog().error("Cannot copy assets from module "+ module +" to "+ assetDir.getAbsolutePath(),e);
+			}
 		}
 	}
 
