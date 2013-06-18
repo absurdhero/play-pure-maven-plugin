@@ -1,15 +1,7 @@
-Port to Play Framework 2.1 
---------------------------
-Includes play2.1.1 routes-compiler and templates-compiler
-for compilation against scala 2.10
-
-Original README following...
-
-
 Play Pure-Maven Plugin
 ======================
 
-This plugin allows Play Framework 2.0 projects to use the Maven build system instead of SBT.
+This plugin allows Play Framework 2.1 projects to use the Maven build system instead of SBT.
 
 The plugin provides a solution to organizations who already have maven experience or
 would like to create a web application with Play Framework that plays well
@@ -87,10 +79,10 @@ Maven Project Setup (pom.xml)
 ------------------------------
 
 A bare-bones project can be found at `src/test/resources/play-maven-project <https://github.com/absurdhero/play-pure-maven-plugin/tree/master/src/test/resources/play-maven-project>`_
-This working project uses the recommended Play 2.0 file layout.
+This working project uses the recommended Play 2.1 file layout.
 
 Refer to ``sample_play_project_pom.xml`` for a non-trivial maven example
-project which works with the Play 2.0 file layout.
+project which works with the Play 2.1 file layout.
 It handles class paths appropriately, sets up the scala compiler, and invokes
 the play-pure-maven plugin at the right points. This sample also shows how to
 set up jar packaging, provides the ability to start the production server with ``mvn exec:exec``,
@@ -120,7 +112,7 @@ In the plugins section:
       <plugin>
         <groupId>net.alchim31.maven</groupId>
         <artifactId>scala-maven-plugin</artifactId>
-        <version>3.0.1</version>
+        <version>3.1.3</version>
         <configuration>
           <!-- Use Zinc Compiler if running (https://github.com/typesafehub/zinc) -->
           <recompileMode>incremental</recompileMode>
@@ -167,20 +159,20 @@ In the dependencies section, include the version of Play you will depend on:
 ::
 
         <dependency>
-            <groupId>play</groupId>
-            <artifactId>play_2.9.1</artifactId>
-            <version>2.0.3</version>
-            <scope>compile</scope>
+          <groupId>play</groupId>
+          <artifactId>play_2.10</artifactId>
+          <version>2.1.1</version>
+          <scope>compile</scope>
         </dependency>
         <dependency>
-            <groupId>play</groupId>
-            <artifactId>templates_2.9.1</artifactId>
-            <version>2.0.3</version>
-            <scope>compile</scope>
+           <groupId>play</groupId>
+           <artifactId>templates_2.10</artifactId>
+           <version>2.1.1</version>
+           <scope>compile</scope>
         </dependency>
-        <dependency>
+ 	    <dependency>
             <groupId>play</groupId>
-            <artifactId>play-test_2.9.1</artifactId>
-            <version>2.0.3</version>
+            <artifactId>play-test_2.10</artifactId>
+            <version>2.1.1</version>
             <scope>compile</scope>
         </dependency>

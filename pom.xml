@@ -45,14 +45,20 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
 
+  <distributionManagement>
+    <snapshotRepository>
+       <id>nexus</id>
+       <url>http://ci.endovl.org.au/nexus/content/repositories/thirdpartysnapshots/</url>
+    </snapshotRepository>
+  </distributionManagement>
 
-        <distributionManagement>
-                 <snapshotRepository>
-                        <id>nexus</id>
-                        <url>http://ci.endovl.org.au/nexus/content/repositories/thirdpartysnapshots/</url>
-                </snapshotRepository>
-        </distributionManagement>
-
+  <repositories>
+    <repository>
+      <id>typesafe</id>
+      <url>http://repo.typesafe.com/typesafe/releases/</url>
+    </repository>
+  </repositories>
+  
   <build>
     <plugins>
       <plugin>
