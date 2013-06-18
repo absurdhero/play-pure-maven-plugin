@@ -1,0 +1,210 @@
+<project>
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>com.example</groupId>
+    <artifactId>sample-play-scala</artifactId>
+    <version>1.0-SNAPSHOT</version>
+
+    <properties>
+        <targetJdk>1.6</targetJdk>
+    </properties>
+
+    <repositories>
+        <repository>
+            <id>typesafe</id>
+            <url>http://repo.typesafe.com/typesafe/releases/</url>
+        </repository>
+    </repositories>
+
+    <build>
+        <!-- Use the Play directory structure -->
+        <directory>target</directory>
+        <outputDirectory>target/scala-2.10/classes</outputDirectory>
+        <testOutputDirectory>target/test-classes</testOutputDirectory>
+        <sourceDirectory>app</sourceDirectory>
+        <testSourceDirectory>test</testSourceDirectory>
+        <resources>
+            <resource>
+                <directory>conf</directory>
+                <excludes>
+                    <exclude>application.conf*</exclude>
+                </excludes>
+            </resource>
+        </resources>
+        <testResources>
+            <testResource>
+                <directory>test/resources</directory>
+            </testResource>
+            <testResource>
+                <directory>features</directory>
+            </testResource>
+        </testResources>
+
+    <plugins>
+      <plugin>
+        <groupId>net.alchim31.maven</groupId>
+        <artifactId>scala-maven-plugin</artifactId>
+        <version>3.1.3</version>
+        <configuration>
+          <!-- Use Zinc Compiler if running (https://github.com/typesafehub/zinc) -->
+          <recompileMode>incremental</recompileMode>
+          <useZincServer>true</useZincServer>
+          <charset>UTF-8</charset>
+        </configuration>
+        <executions>
+          <execution>
+            <id>compile</id>
+            <goals>
+              <goal>compile</goal>
+            </goals>
+            <phase>compile</phase>
+          </execution>
+          <execution>
+            <id>test-compile</id>
+            <goals>
+              <goal>testCompile</goal>
+            </goals>
+            <phase>test-compile</phase>
+          </execution>
+          <execution>
+            <phase>process-resources</phase>
+            <goals>
+              <goal>compile</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+
+      <plugin>
+          <groupId>net.raboof.play</groupId>
+          <artifactId>play-pure-maven-plugin</artifactId>
+          <version>1.3-SNAPSHOT</version>
+          <executions>
+              <execution>
+                  <goals>
+                      <goal>compile-templates</goal>
+                      <goal>link-assets</goal>
+                  </goals>
+              </execution>
+          </executions>
+      </plugin>
+
+      <!-- exclude application.conf from the jar -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jar-plugin</artifactId>
+        <version>2.4</version>
+        <configuration>
+          <excludes>
+            <exclude>**/application.conf</exclude>
+          </excludes>
+        </configuration>
+      </plugin>
+
+     <!-- Execute from the project root with "mvn exec:exec" -->
+     <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>exec-maven-plugin</artifactId>
+        <version>1.2.1</version>
+        <configuration>
+          <executable>java</executable>
+          <commandlineArgs>-Xms512m -Xmx512m -DapplyEvolutions.default=true -classpath %classpath play.core.server.NettyServer</commandlineArgs>
+        </configuration>
+      </plugin>
+
+      <!-- Set up code coverage reporting. Ignore templates and routes -->
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>cobertura-maven-plugin</artifactId>
+        <configuration>
+          <instrumentation>
+            <ignores>
+              <ignore>controllers.ref</ignore>
+              <ignore>controllers.javascript</ignore>
+            </ignores>
+            <excludes>
+                <exclude>views/html/**/*.class</exclude>
+                <exclude>Route*.class</exclude>
+                <exclude>controllers/javascript/*.class</exclude>
+                <exclude>controllers/ref/*.class</exclude>
+                <exclude>controllers/routes*.class</exclude>
+                <exclude>controllers/Reverse*.class</exclude>
+                <exclude>routes*.class</exclude>
+            </excludes>
+          </instrumentation>
+        </configuration>
+        <executions>
+          <execution>
+            <goals>
+              <goal>clean</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+
+    </plugins>
+  </build>
+
+    <dependencies>
+        <!-- Play Framework -->
+        <dependency>
+          <groupId>play</groupId>
+          <artifactId>play_2.10</artifactId>
+          <version>2.1.1</version>
+          <scope>compile</scope>
+        </dependency>
+        <dependency>
+          <groupId>play</groupId>
+          <artifactId>play-java_2.10</artifactId>
+          <version>2.1.1</version>
+          <scope>compile</scope>
+        </dependency>
+        <dependency>
+           <groupId>play</groupId>
+           <artifactId>templates_2.10</artifactId>
+           <version>2.1.1</version>
+           <scope>compile</scope>
+        </dependency>
+ 	    <dependency>
+            <groupId>play</groupId>
+            <artifactId>play-test_2.10</artifactId>
+            <version>2.1.1</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+          <groupId>org.apache.httpcomponents</groupId>
+          <artifactId>httpclient</artifactId>
+          <version>4.2.5</version>
+          <scope>test</scope>
+        </dependency>
+
+        <!-- Additional Dependencies -->
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-core</artifactId>
+			<version>1.0.13</version>
+        </dependency>
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+			<version>1.0.13</version>
+        </dependency>
+        <dependency>
+            <groupId>org.avaje</groupId>
+            <artifactId>ebean</artifactId>
+			<version>2.8.1</version>
+        </dependency>
+        <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+            <version>1.3.172</version>
+        </dependency>
+
+        <!-- Dependencies for Tests -->
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+			<version>4.11</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+</project>
