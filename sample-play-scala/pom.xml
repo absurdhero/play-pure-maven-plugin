@@ -82,7 +82,7 @@
               <execution>
                   <goals>
                       <goal>compile-templates</goal>
-                      <!--goal>link-assets</goal-->
+                      <goal>link-assets</goal>
                   </goals>
               </execution>
           </executions>
