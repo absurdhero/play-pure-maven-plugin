@@ -1,5 +1,3 @@
-package com.nominum.build;
-
 /*
  * Copyright 2012 Nominum, Inc.
  *
@@ -15,10 +13,15 @@ package com.nominum.build;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package com.nominum.build;
 
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
+import org.apache.maven.plugins.annotations.LifecyclePhase;
+import org.apache.maven.plugins.annotations.Mojo;
+import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.project.MavenProject;
+
 import play.templates.TemplateCompilationError;
 import scala.collection.JavaConversions;
 
@@ -29,48 +32,36 @@ import java.util.List;
 /**
  * Compiles scala.html files to scala source files and compiles routes.
  *
- * @goal compile-templates
- * 
- * @phase generate-sources
- *
  * @requiresDependencyResolution compile
  */
-public class TemplateCompilerMojo
-    extends AbstractMojo
-{
+@Mojo(name="compile-templates",defaultPhase=LifecyclePhase.GENERATE_SOURCES)
+public class TemplateCompilerMojo extends AbstractMojo {
 
-    /**
-     * @parameter expression="${project}"
-     * @required
-     * @readonly
-     */
+    @Parameter(defaultValue="${project}",required=true,readonly=true)
     private MavenProject project;
 
     /**
      * Location of the compiled templates.
-     * @parameter expression="${project.build.directory}/generated-sources/play-templates"
-     * @required
      */
+    @Parameter(property="project.build.directory",defaultValue="${project.build.directory}/generated-sources/play-templates",required=true)
     private File generatedSourcesDirectory;
 
     /**
      * Location of the source files.
-     * @parameter expression="${pom.build.sourceDirectory}"
-     * @required
      */
+    @Parameter(defaultValue="${project.build.sourceDirectory}",required=true)
     private File sourceDirectory;
 
     /**
      * Location of the play conf directory.
-     * @parameter expression="${project.basedir}/conf"
-     * @required
      */
+    @Parameter(defaultValue="${project.basedir}/conf",required=true)
     private File confDirectory;
 
     public void execute()
         throws MojoExecutionException {
         try {
-        compileTemplatesAndRoutes(absolutePath(confDirectory),
+            compileTemplatesAndRoutes(absolutePath(confDirectory),
                 absolutePath(generatedSourcesDirectory), project, absolutePath(sourceDirectory));
         } catch (TemplateCompilationError e) {
             String msg = String.format("Error in template %s:%s %s", e.source().getPath(), e.line(), e.message());
@@ -103,7 +94,9 @@ public class TemplateCompilerMojo
 
     }
 
-    /** Convert Files with relative paths to be relative from the project basedir. **/
+    /** 
+     * Convert Files with relative paths to be relative from the project basedir. 
+     */
     private File absolutePath(File file) {
         if (file.isAbsolute()) {
             return file;

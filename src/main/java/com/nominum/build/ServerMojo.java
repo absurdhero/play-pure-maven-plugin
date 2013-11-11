@@ -5,6 +5,8 @@ import org.apache.commons.vfs2.impl.DefaultFileMonitor;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
+import org.apache.maven.plugins.annotations.Mojo;
+import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.project.MavenProject;
 import org.apache.maven.project.MavenProjectHelper;
 
@@ -15,17 +17,14 @@ import java.io.InputStreamReader;
 
 /**
  * This mojo monitors source files and recompiles and reloads the development server automatically.
- * @goal watch
  */
+@Mojo(name="watch")
 public class ServerMojo extends AbstractMojo implements FileListener {
 
     /**
      * The maven project.
-     *
-     * @parameter expression="${project}"
-     * @required
-     * @readonly
      */
+    @Parameter(defaultValue="${project}",required=true,readonly=true)
     public MavenProject project;
 
     /**
@@ -38,35 +37,32 @@ public class ServerMojo extends AbstractMojo implements FileListener {
 
     /**
      * Location of the compiled templates.
-     * @parameter expression="${project.build.directory}/generated-sources/play-templates"
-     * @required
      */
+    @Parameter(defaultValue="${project.build.directory}/generated-sources/play-templates",required=true)
     private File generatedSourcesDirectory;
 
     /**
      * Location of the source files.
-     * @parameter expression="${pom.build.sourceDirectory}"
-     * @required
      */
+    @Parameter(defaultValue="${project.build.sourceDirectory}",required=true)
     private File sourceDirectory;
 
     /**
      * Location of the play conf directory.
-     * @parameter expression="${project.basedir}/conf"
-     * @required
      */
+    @Parameter(defaultValue="${project.basedir}/conf",required=true)
     private File confDirectory;
 
     /**
      * Directory containing the build files.
-     * @parameter expression="${project.build.directory}"
      */
+    @Parameter(defaultValue="${project.build.directory}")
     public File buildDirectory;
 
     /**
      * Base directory of the project.
-     * @parameter expression="${basedir}"
      */
+    @Parameter(defaultValue="${project.basedir}")
     public File baseDirectory;
 
 

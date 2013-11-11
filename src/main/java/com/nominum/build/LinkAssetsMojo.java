@@ -1,5 +1,3 @@
-package com.nominum.build;
-
 /*
  * Copyright 2012 Nominum, Inc.
  *
@@ -15,9 +13,13 @@ package com.nominum.build;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package com.nominum.build;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.plugin.AbstractMojo;
+import org.apache.maven.plugins.annotations.LifecyclePhase;
+import org.apache.maven.plugins.annotations.Mojo;
+import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.project.MavenProject;
 
@@ -28,34 +30,23 @@ import java.io.IOException;
  * Link static assets directory into build output directory.
  *
  * This Mojo only works on Unix-like systems with the "ln" program.
- *
- * @goal link-assets
- *
- * @phase generate-sources
  */
-public class LinkAssetsMojo
-        extends AbstractMojo
-{
+@Mojo(name="link-assets",defaultPhase=LifecyclePhase.GENERATE_SOURCES)
+public class LinkAssetsMojo extends AbstractMojo {
 
-    /**
-     * @parameter expression="${project}"
-     * @required
-     * @readonly
-     */
+    @Parameter(defaultValue="${project}",required=true,readonly=true)
     private MavenProject project;
 
     /**
      * Output directory in classpath.
-     * @parameter expression="${project.build.outputDirectory}"
-     * @required
      */
+    @Parameter(defaultValue="${project.build.outputDirectory}",required=true)
     private File outputDirectory;
 
     /**
      * Location of the assets directory.
-     * @parameter expression="${project.basedir}/public"
-     * @required
      */
+    @Parameter(defaultValue="${project.basedir}/public",required=true)
     private File assetDirectory;
 
     public void execute()
