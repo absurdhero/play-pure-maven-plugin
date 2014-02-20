@@ -18,7 +18,7 @@
     <build>
         <!-- Use the Play directory structure -->
         <directory>target</directory>
-        <outputDirectory>target/scala-2.9.1/classes</outputDirectory>
+        <outputDirectory>target/scala-2.10/classes</outputDirectory>
         <testOutputDirectory>target/test-classes</testOutputDirectory>
         <sourceDirectory>app</sourceDirectory>
         <testSourceDirectory>test</testSourceDirectory>
@@ -77,7 +77,7 @@
       <plugin>
           <groupId>net.raboof.play</groupId>
           <artifactId>play-pure-maven-plugin</artifactId>
-          <version>1.1-SNAPSHOT</version>
+          <version>2.2-SNAPSHOT</version>
           <executions>
               <execution>
                   <goals>
