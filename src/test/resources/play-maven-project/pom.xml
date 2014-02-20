@@ -7,6 +7,9 @@
     <properties>
         <targetJdk>1.5</targetJdk>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
+        <play.version>2.2.1</play.version>
+        <play2-scala.version>2.10</play2-scala.version>
     </properties>
 
     <repositories>
@@ -94,26 +97,26 @@
         <!-- Play Framework -->
         <dependency>
             <groupId>com.typesafe.play</groupId>
-            <artifactId>play_2.10</artifactId>
-            <version>2.2.0</version>
+            <artifactId>play_${play2-scala.version}</artifactId>
+            <version>${play.version}</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>com.typesafe.play</groupId>
-            <artifactId>play-java_2.10</artifactId>
-            <version>2.2.0</version>
+            <artifactId>play-java_${play2-scala.version}</artifactId>
+            <version>${play.version}</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>com.typesafe.play</groupId>
-            <artifactId>templates_2.10</artifactId>
-            <version>2.2.0</version>
+            <artifactId>templates_${play2-scala.version}</artifactId>
+            <version>${play.version}</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>com.typesafe.play</groupId>
-            <artifactId>play-test_2.10</artifactId>
-            <version>2.2.0</version>
+            <artifactId>play-test_${play2-scala.version}</artifactId>
+            <version>${play.version}</version>
             <scope>compile</scope>
         </dependency>
     </dependencies>
