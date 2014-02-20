@@ -1,5 +1,3 @@
-package com.nominum.build
-
 /*
  * Copyright 2012 Nominum, Inc.
  *
@@ -15,10 +13,11 @@ package com.nominum.build
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package com.nominum.build
 
 import java.io.File
-import play.core.Router.RoutesCompiler
-import play.core.Router.RoutesCompiler._
+import play.router._
+import play.router.RoutesCompiler._
 import com.nominum.build.Util.filesInDirStartingWith
 import org.apache.maven.plugin.MojoExecutionException
 
@@ -26,7 +25,12 @@ class PlayRoutesCompiler {
   def compile(confDirectory: File, generatedDir: File, additionalImports: Seq[String]) = {
 
     (Array(new File(generatedDir, "routes.java")) ++ filesInDirStartingWith(generatedDir, "routes_*")).filter(_ == null).map(GeneratedSource(_)).foreach(_.sync())
-    val routesFile = new File(confDirectory, "routes")
+    var routesFile = new File(confDirectory, "routes")
+    if (!routesFile.exists) {
+       for (file <- confDirectory.listFiles.filter(_.getName.endsWith("routes"))) {
+         if (file.exists) routesFile = file
+       }
+    }
     try {
       RoutesCompiler.compile(routesFile, generatedDir, additionalImports)
     } catch {

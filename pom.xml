@@ -37,6 +37,8 @@
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <play.version>2.2.0</play.version>
+    <scala.version>2.10.2</scala.version>
   </properties>
 
   <repositories>
@@ -59,7 +61,7 @@
       <plugin>
         <groupId>net.alchim31.maven</groupId>
         <artifactId>scala-maven-plugin</artifactId>
-        <version>3.0.1</version>
+        <version>3.1.6</version>
         <executions>
           <execution>
             <id>compile</id>
@@ -79,6 +81,30 @@
             <phase>process-resources</phase>
             <goals>
               <goal>compile</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-plugin-plugin</artifactId>
+        <version>3.1</version>
+        <configuration>
+          <goalPrefix>play-pure</goalPrefix>
+          <skipErrorNoDescriptorsFound>true</skipErrorNoDescriptorsFound>
+        </configuration>
+        <executions>
+          <execution>
+            <id>mojo-descriptor</id>
+            <goals>
+              <goal>descriptor</goal>
+            </goals>
+          </execution>
+          <execution>
+            <id>help-goal</id>
+            <goals>
+              <goal>helpmojo</goal>
             </goals>
           </execution>
         </executions>
@@ -148,30 +174,56 @@
       <version>2.0</version>
     </dependency>
     <dependency>
-      <groupId>play</groupId>
-      <artifactId>play_2.9.1</artifactId>
-      <version>2.0.3</version>
+      <groupId>org.apache.maven.plugin-tools</groupId>
+      <artifactId>maven-plugin-annotations</artifactId>
+      <version>3.1</version>
+    </dependency>
+    <dependency>
+      <groupId>org.codehaus.plexus</groupId>
+      <artifactId>plexus-utils</artifactId>
+      <version>3.0.3</version>
+    </dependency>
+    <dependency>
+      <groupId>com.typesafe.play</groupId>
+      <artifactId>play_2.10</artifactId>
+      <version>${play.version}</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
-      <groupId>play</groupId>
-      <artifactId>templates_2.9.1</artifactId>
-      <version>2.0.3</version>
-      <scope>compile</scope>
+      <groupId>com.typesafe.play</groupId>
+      <artifactId>templates-compiler_2.10</artifactId>
+      <version>${play.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.typesafe.play</groupId>
+      <artifactId>routes-compiler_2.10</artifactId>
+      <version>${play.version}</version>
     </dependency>
     <dependency>
       <groupId>org.scala-lang</groupId>
       <artifactId>scala-compiler</artifactId>
-      <version>2.9.2</version>
+      <version>${scala.version}</version>
       <scope>runtime</scope>
     </dependency>
+    <dependency>
+      <groupId>org.scala-lang</groupId>
+      <artifactId>scala-library</artifactId>
+      <version>${scala.version}</version>
+    </dependency>
 
-     <!-- Watch the Filesystem -->
-     <dependency>
-       <groupId>org.apache.commons</groupId>
-       <artifactId>commons-vfs2</artifactId>
-       <version>2.0</version>
-     </dependency>
+
+    <!-- Watch the Filesystem -->
+    <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-vfs2</artifactId>
+      <version>2.0</version>
+    </dependency>
+
+    <dependency>
+      <groupId>commons-lang</groupId>
+      <artifactId>commons-lang</artifactId>
+      <version>2.6</version>
+    </dependency>
 
     <!-- libraries for test -->
     <dependency>

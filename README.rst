@@ -1,7 +1,7 @@
 Play Pure-Maven Plugin
 ======================
 
-This plugin allows Play Framework 2.0 projects to use the Maven build system instead of SBT.
+This plugin allows Play Framework 2.2 projects to use the Maven build system instead of SBT.
 
 The plugin provides a solution to organizations who already have maven experience or
 would like to create a web application with Play Framework that plays well
@@ -38,7 +38,9 @@ Clone the repository from git and install the plugin in your local maven reposit
 
   git clone https://github.com/absurdhero/play-pure-maven-plugin.git
   cd play-pure-maven-plugin
-  mvn install
+  mvn install -DskipTests=true
+
+Note: tests are skipped, for the first execution, becuase they depend on the plugin itself.
 
 Plugin Mojos
 ------------
@@ -97,7 +99,7 @@ In the plugins section:
    <plugin>
        <groupId>net.raboof.play</groupId>
        <artifactId>play-pure-maven-plugin</artifactId>
-       <version>1.1-SNAPSHOT</version>
+       <version>1.2-SNAPSHOT</version>
        <executions>
            <execution>
                <goals>
@@ -112,7 +114,7 @@ In the plugins section:
       <plugin>
         <groupId>net.alchim31.maven</groupId>
         <artifactId>scala-maven-plugin</artifactId>
-        <version>3.0.1</version>
+        <version>3.1.6</version>
         <configuration>
           <!-- Use Zinc Compiler if running (https://github.com/typesafehub/zinc) -->
           <recompileMode>incremental</recompileMode>
@@ -159,20 +161,20 @@ In the dependencies section, include the version of Play you will depend on:
 ::
 
         <dependency>
-            <groupId>play</groupId>
-            <artifactId>play_2.9.1</artifactId>
-            <version>2.0.3</version>
+            <groupId>com.typesafe.play</groupId>
+            <artifactId>play_2.10</artifactId>
+            <version>2.2.0</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
-            <groupId>play</groupId>
-            <artifactId>templates_2.9.1</artifactId>
-            <version>2.0.3</version>
+            <groupId>com.typesafe.play</groupId>
+            <artifactId>templates_2.10</artifactId>
+            <version>2.2.0</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
-            <groupId>play</groupId>
-            <artifactId>play-test_2.9.1</artifactId>
-            <version>2.0.3</version>
+            <groupId>com.typesafe.play</groupId>
+            <artifactId>play-test_2.10</artifactId>
+            <version>2.2.0</version>
             <scope>compile</scope>
         </dependency>

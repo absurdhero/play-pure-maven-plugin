@@ -26,35 +26,25 @@ class TemplateCompiler(classpath: Seq[File], forJava: Boolean) {
     Seq(
       "models._",
       "controllers._",
-
       "java.lang._",
       "java.util._",
-
       "scala.collection.JavaConversions._",
       "scala.collection.JavaConverters._",
-
       "play.api.i18n._",
-      "play.api.templates.PlayMagicForJava._",
-
+      "play.core.j.PlayMagicForJava._",
       "play.mvc._",
       "play.data._",
       "play.api.data.Field",
-      "com.avaje.ebean._",
-
       "play.mvc.Http.Context.Implicit._",
-      // only supports html
-      "views.html._")
+      "views.html._" )
 
   } else {
     Seq(
       "models._",
       "controllers._",
-
       "play.api.i18n._",
-
       "play.api.mvc._",
       "play.api.data._",
-
       "views.html._")
   }
 
@@ -81,9 +71,9 @@ class TemplateCompiler(classpath: Seq[File], forJava: Boolean) {
 
     filesInDirEndingWith(sourceDirectory, ".scala.html").foreach {
       template =>
-        val compile = compiler.getDeclaredMethod("compile", classOf[java.io.File], classOf[java.io.File], classOf[java.io.File], classOf[String], classOf[String], classOf[String])
+        val compile = compiler.getDeclaredMethod("compile", classOf[java.io.File], classOf[java.io.File], classOf[java.io.File], classOf[String], classOf[String])
         try {
-          compile.invoke(null, template, sourceDirectory, generatedDir, "play.api.templates.Html", "play.api.templates.HtmlFormat", "import play.api.templates._\nimport play.api.templates.PlayMagic._" + "\nimport " + templatesImport.mkString("\nimport "))
+          compile.invoke(null, template, sourceDirectory, generatedDir, "play.api.templates.HtmlFormat", "import play.api.templates._\nimport play.api.templates.PlayMagic._" + "\nimport " + templatesImport.mkString("\nimport "))
         } catch {
           case e: java.lang.reflect.InvocationTargetException => {
             throw e.getTargetException
