@@ -38,6 +38,7 @@
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <play.version>2.2.0</play.version>
+    <play2-scala.version>2.10</play2-scala.version>
     <scala.version>2.10.2</scala.version>
   </properties>
 
@@ -185,18 +186,18 @@
     </dependency>
     <dependency>
       <groupId>com.typesafe.play</groupId>
-      <artifactId>play_2.10</artifactId>
+      <artifactId>play_${play2-scala.version}</artifactId>
       <version>${play.version}</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>com.typesafe.play</groupId>
-      <artifactId>templates-compiler_2.10</artifactId>
+      <artifactId>templates-compiler_${play2-scala.version}</artifactId>
       <version>${play.version}</version>
     </dependency>
     <dependency>
       <groupId>com.typesafe.play</groupId>
-      <artifactId>routes-compiler_2.10</artifactId>
+      <artifactId>routes-compiler_${play2-scala.version}</artifactId>
       <version>${play.version}</version>
     </dependency>
     <dependency>
