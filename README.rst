@@ -40,7 +40,7 @@ Clone the repository from git and install the plugin in your local maven reposit
   cd play-pure-maven-plugin
   mvn install -DskipTests=true
 
-Note: tests are skipped, for the first execution, becuase they depend on the plugin itself.
+Note: tests are skipped for the first execution because they depend on the plugin itself.
 
 Plugin Mojos
 ------------
@@ -64,7 +64,7 @@ To-Do
 - Support continuous compilation of templates as source files are edited
 - Provide a hot-reloading development server through an SBTLink implementation or other mechanism
 - Find a way to use the play version specified by the plugin consumer rather than specifying a version in this plugin
-- As an Alternative, version this plugin based on the play version it is tied with
+  As an alternative, this plugin is versioned based on the play version it is tied with.
 - Asset linking is only supported on unix-like systems. A solution for Windows would be nice.
 
 License
@@ -99,7 +99,7 @@ In the plugins section:
    <plugin>
        <groupId>net.raboof.play</groupId>
        <artifactId>play-pure-maven-plugin</artifactId>
-       <version>1.2-SNAPSHOT</version>
+       <version>2.2-SNAPSHOT</version>
        <executions>
            <execution>
                <goals>
