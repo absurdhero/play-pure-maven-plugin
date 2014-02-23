@@ -22,7 +22,7 @@ import com.nominum.build.Util.filesInDirStartingWith
 import org.apache.maven.plugin.MojoExecutionException
 
 class PlayRoutesCompiler {
-  def compile(confDirectory: File, generatedDir: File, additionalImports: Seq[String]) = {
+  def compile(confDirectory: File, generatedDir: File, additionalImports: Seq[String], generateReverseRouter: Boolean) = {
 
     (Array(new File(generatedDir, "routes.java")) ++ filesInDirStartingWith(generatedDir, "routes_*")).filter(_ == null).map(GeneratedSource(_)).foreach(_.sync())
     var routesFile = new File(confDirectory, "routes")
@@ -32,7 +32,7 @@ class PlayRoutesCompiler {
        }
     }
     try {
-      RoutesCompiler.compile(routesFile, generatedDir, additionalImports)
+      RoutesCompiler.compile(routesFile, generatedDir, additionalImports, generateReverseRouter)
     } catch {
       case e: RoutesCompilationError => throw new MojoExecutionException("Error in routes file on line " + e.line, e)
     }

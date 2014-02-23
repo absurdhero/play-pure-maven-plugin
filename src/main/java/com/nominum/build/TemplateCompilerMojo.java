@@ -58,11 +58,15 @@ public class TemplateCompilerMojo extends AbstractMojo {
     @Parameter(defaultValue="${project.basedir}/conf",required=true)
     private File confDirectory;
 
+    @Parameter(defaultValue="true", required=true)
+    private Boolean generateReverseRouter;
+
     public void execute()
         throws MojoExecutionException {
         try {
             compileTemplatesAndRoutes(absolutePath(confDirectory),
-                absolutePath(generatedSourcesDirectory), project, absolutePath(sourceDirectory));
+                absolutePath(generatedSourcesDirectory), project, absolutePath(sourceDirectory),
+                generateReverseRouter);
         } catch (TemplateCompilationError e) {
             String msg = String.format("Error in template %s:%s %s", e.source().getPath(), e.line(), e.message());
             throw new MojoExecutionException(msg);
@@ -70,7 +74,7 @@ public class TemplateCompilerMojo extends AbstractMojo {
     }
 
     /** This static method is usable by other Mojos */
-    public static void compileTemplatesAndRoutes(File confDirectory, File outputDir, MavenProject project, File sourceDir) throws MojoExecutionException {
+    public static void compileTemplatesAndRoutes(File confDirectory, File outputDir, MavenProject project, File sourceDir, boolean generateReverseRouter) throws MojoExecutionException {
         project.addCompileSourceRoot(outputDir.getAbsolutePath());
 
         if (!outputDir.exists()) {
@@ -80,7 +84,7 @@ public class TemplateCompilerMojo extends AbstractMojo {
 
         PlayRoutesCompiler routesCompiler = new PlayRoutesCompiler();
         routesCompiler.compile(confDirectory, outputDir,
-                new scala.collection.mutable.ArrayBuffer<String>());
+                new scala.collection.mutable.ArrayBuffer<String>(), generateReverseRouter);
 
         List<File> classpathFiles = new ArrayList<File>();
         String classpath = System.getProperty("java.class.path");
