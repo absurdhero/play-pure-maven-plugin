@@ -5,7 +5,9 @@
     <version>1.0-SNAPSHOT</version>
 
     <properties>
-        <targetJdk>1.6</targetJdk>
+        <targetJdk>1.7</targetJdk>
+        <play.version>2.2.1</play.version>
+        <play2-scala.version>2.10</play2-scala.version>
     </properties>
 
     <repositories>
@@ -147,21 +149,45 @@
     <dependencies>
         <!-- Play Framework -->
         <dependency>
-            <groupId>play</groupId>
-            <artifactId>play_2.9.1</artifactId>
-            <version>2.0.3</version>
+            <groupId>com.typesafe.play</groupId>
+            <artifactId>play_${play2-scala.version}</artifactId>
+            <version>${play.version}</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
-            <groupId>play</groupId>
-            <artifactId>templates_2.9.1</artifactId>
-            <version>2.0.3</version>
+            <groupId>com.typesafe.play</groupId>
+            <artifactId>play-java_${play2-scala.version}</artifactId>
+            <version>${play.version}</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
-            <groupId>play</groupId>
-            <artifactId>play-test_2.9.1</artifactId>
-            <version>2.0.3</version>
+            <groupId>com.typesafe.play</groupId>
+            <artifactId>templates_${play2-scala.version}</artifactId>
+            <version>${play.version}</version>
+            <scope>compile</scope>
+        </dependency>
+
+        <!-- More optional Play Framework libraries -->
+        <dependency>
+            <groupId>com.typesafe.play</groupId>
+            <artifactId>play-java-jdbc_${play.scala.version}</artifactId>
+            <version>${play.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.typesafe.play</groupId>
+            <artifactId>play-java-ebean_${play.scala.version}</artifactId>
+            <version>${play.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.typesafe.play</groupId>
+            <artifactId>play-cache_${play.scala.version}</artifactId>
+            <version>${play.version}</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.typesafe.play</groupId>
+            <artifactId>play-json_${play.scala.version}</artifactId>
+            <version>${play.version}</version>
             <scope>compile</scope>
         </dependency>
 
@@ -175,15 +201,17 @@
             <artifactId>logback-classic</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.avaje</groupId>
-            <artifactId>ebean</artifactId>
-        </dependency>
-        <dependency>
             <groupId>com.h2database</groupId>
             <artifactId>h2</artifactId>
         </dependency>
 
         <!-- Dependencies for Tests -->
+        <dependency>
+            <groupId>com.typesafe.play</groupId>
+            <artifactId>play-test_${play2-scala.version}</artifactId>
+            <version>${play.version}</version>
+            <scope>compile</scope>
+        </dependency>
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
