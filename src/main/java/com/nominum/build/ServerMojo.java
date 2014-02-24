@@ -65,6 +65,9 @@ public class ServerMojo extends AbstractMojo implements FileListener {
     @Parameter(defaultValue="${project.basedir}")
     public File baseDirectory;
 
+    /** whether reverse routes are generated */
+    @Parameter(defaultValue="true", required=true)
+    private Boolean generateReverseRouter;
 
     public void execute() throws MojoExecutionException, MojoFailureException {
 
@@ -172,7 +175,7 @@ public class ServerMojo extends AbstractMojo implements FileListener {
 
     private void compileTemplatesAndRoutes() throws MojoExecutionException {
         TemplateCompilerMojo.compileTemplatesAndRoutes(confDirectory,
-                generatedSourcesDirectory, project, sourceDirectory);
+                generatedSourcesDirectory, project, sourceDirectory, generateReverseRouter);
     }
 
     public void fileCreated(FileChangeEvent event) throws Exception {
