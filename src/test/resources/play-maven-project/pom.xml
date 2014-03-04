@@ -117,7 +117,7 @@
             <groupId>com.typesafe.play</groupId>
             <artifactId>play-test_${play2-scala.version}</artifactId>
             <version>${play.version}</version>
-            <scope>compile</scope>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 </project>
