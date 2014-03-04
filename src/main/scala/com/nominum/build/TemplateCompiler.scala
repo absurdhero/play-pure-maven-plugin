@@ -53,6 +53,7 @@ class TemplateCompiler(classpath: Seq[File], forJava: Boolean) {
     val compiler = classLoader.loadClass("play.templates.ScalaTemplateCompiler")
     val generatedSource = classLoader.loadClass("play.templates.GeneratedSource")
 
+    // remove scala source files that no longer correspond with an html template file
     filesInDirEndingWith(generatedDir, ".template.scala").foreach {
       source =>
         val constructor = generatedSource.getDeclaredConstructor(classOf[java.io.File])
@@ -69,6 +70,7 @@ class TemplateCompiler(classpath: Seq[File], forJava: Boolean) {
         }
     }
 
+    // generate scala sources from html
     filesInDirEndingWith(sourceDirectory, ".scala.html").foreach {
       template =>
         val compile = compiler.getDeclaredMethod("compile", classOf[java.io.File], classOf[java.io.File], classOf[java.io.File], classOf[String], classOf[String])
