@@ -6,7 +6,7 @@
 
     <properties>
         <targetJdk>1.7</targetJdk>
-        <play.version>2.2.1</play.version>
+        <play.version>2.2.2</play.version>
         <play2-scala.version>2.10</play2-scala.version>
     </properties>
 

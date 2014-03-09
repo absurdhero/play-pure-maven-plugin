@@ -8,7 +8,7 @@
         <targetJdk>1.5</targetJdk>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
-        <play.version>2.2.1</play.version>
+        <play.version>2.2.2</play.version>
         <play2-scala.version>2.10</play2-scala.version>
     </properties>
 
