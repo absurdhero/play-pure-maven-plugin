@@ -99,7 +99,7 @@ In the plugins section:
    <plugin>
        <groupId>net.raboof.play</groupId>
        <artifactId>play-pure-maven-plugin</artifactId>
-       <version>2.2-SNAPSHOT</version>
+       <version>2.2.1</version>
        <executions>
            <execution>
                <goals>
