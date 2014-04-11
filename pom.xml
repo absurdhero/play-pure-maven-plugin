@@ -3,7 +3,7 @@
   <groupId>net.raboof.play</groupId>
   <artifactId>play-pure-maven-plugin</artifactId>
   <packaging>maven-plugin</packaging>
-  <version>2.2.2</version>
+  <version>2.2.3</version>
   <name>play-pure-maven-plugin Maven Mojo</name>
   <url>https://absurdhero.github.com/play-pure-maven-plugin</url>
   <description>Build Play Framework 2 Projects With Maven</description>
@@ -37,7 +37,7 @@
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <play.version>2.2.2</play.version>
+    <play.version>2.2.3</play.version>
     <play2-scala.version>2.10</play2-scala.version>
     <scala.version>2.10.3</scala.version>
   </properties>

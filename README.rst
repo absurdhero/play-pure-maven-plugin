@@ -99,7 +99,7 @@ In the plugins section:
    <plugin>
        <groupId>net.raboof.play</groupId>
        <artifactId>play-pure-maven-plugin</artifactId>
-       <version>2.2.2</version>
+       <version>2.2.3</version>
        <executions>
            <execution>
                <goals>
@@ -163,18 +163,18 @@ In the dependencies section, include the version of Play you will depend on:
         <dependency>
             <groupId>com.typesafe.play</groupId>
             <artifactId>play_2.10</artifactId>
-            <version>2.2.2</version>
+            <version>2.2.3</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>com.typesafe.play</groupId>
             <artifactId>templates_2.10</artifactId>
-            <version>2.2.2</version>
+            <version>2.2.3</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>com.typesafe.play</groupId>
             <artifactId>play-test_2.10</artifactId>
-            <version>2.2.2</version>
+            <version>2.2.3</version>
             <scope>compile</scope>
         </dependency>
