@@ -17,6 +17,7 @@ package com.nominum.build
  */
 
 import java.io.File
+import play.twirl.compiler.{GeneratedSource, TwirlCompiler}
 import com.nominum.build.Util.filesInDirEndingWith
 
 class TemplateCompiler(classpath: Seq[File], forJava: Boolean) {
@@ -50,15 +51,17 @@ class TemplateCompiler(classpath: Seq[File], forJava: Boolean) {
 
   def compile(sourceDirectory: File, generatedDir: File) = {
     val classLoader = new java.net.URLClassLoader(classpath.map(_.toURI.toURL).toArray, this.getClass.getClassLoader)
-    val compiler = classLoader.loadClass("play.templates.ScalaTemplateCompiler")
-    val generatedSource = classLoader.loadClass("play.templates.GeneratedSource")
+    val compiler = classLoader.loadClass("play.twirl.compiler.TwirlCompiler")
+    val generatedSource = classLoader.loadClass("play.twirl.compiler.GeneratedSource")
 
     // remove scala source files that no longer correspond with an html template file
     filesInDirEndingWith(generatedDir, ".template.scala").foreach {
       source =>
-        val constructor = generatedSource.getDeclaredConstructor(classOf[java.io.File])
+        // constructor now has a default parameter -> reflection is sad
+        // apparently we could potentially make it work by looking up the mangled version of the method that the scala compiler generates
+        // http://stackoverflow.com/a/14034802
         val sync = generatedSource.getDeclaredMethod("sync")
-        val generated = constructor.newInstance(source)
+        val generated = new GeneratedSource(source)
         try {
           sync.invoke(generated)
         } catch {
@@ -73,9 +76,10 @@ class TemplateCompiler(classpath: Seq[File], forJava: Boolean) {
     // generate scala sources from html
     filesInDirEndingWith(sourceDirectory, ".scala.html").foreach {
       template =>
-        val compile = compiler.getDeclaredMethod("compile", classOf[java.io.File], classOf[java.io.File], classOf[java.io.File], classOf[String], classOf[String])
         try {
-          compile.invoke(null, template, sourceDirectory, generatedDir, "play.api.templates.HtmlFormat", "import play.api.templates._\nimport play.api.templates.PlayMagic._" + "\nimport " + templatesImport.mkString("\nimport "))
+          // reflection is hampered here by TwirlCompiler's default parameters
+          TwirlCompiler.compile(template, sourceDirectory, generatedDir, "play.twirl.api.HtmlFormat", "import play.twirl.api._\nimport play.twirl.api.TemplateMagic._" + "\nimport " + templatesImport.mkString("\nimport "))
+
         } catch {
           case e: java.lang.reflect.InvocationTargetException => {
             throw e.getTargetException
