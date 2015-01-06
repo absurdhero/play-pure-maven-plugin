@@ -17,8 +17,10 @@ package com.nominum.build
  */
 
 import java.io.File
-import play.twirl.compiler.{GeneratedSource, TwirlCompiler}
+
 import com.nominum.build.Util.filesInDirEndingWith
+
+import scala.io.Codec
 
 class TemplateCompiler(classpath: Seq[File], forJava: Boolean) {
   // from the play sbt-plugin
@@ -57,11 +59,10 @@ class TemplateCompiler(classpath: Seq[File], forJava: Boolean) {
     // remove scala source files that no longer correspond with an html template file
     filesInDirEndingWith(generatedDir, ".template.scala").foreach {
       source =>
-        // constructor now has a default parameter -> reflection is sad
-        // apparently we could potentially make it work by looking up the mangled version of the method that the scala compiler generates
-        // http://stackoverflow.com/a/14034802
+        val constructor = generatedSource.getDeclaredConstructor(classOf[File], classOf[Codec])
         val sync = generatedSource.getDeclaredMethod("sync")
-        val generated = new GeneratedSource(source)
+        val defaultCodec: AnyRef = generatedSource.getDeclaredMethod("apply$default$2").invoke(null)
+        val generated =  constructor.newInstance(source, defaultCodec)
         try {
           sync.invoke(generated)
         } catch {
@@ -77,8 +78,12 @@ class TemplateCompiler(classpath: Seq[File], forJava: Boolean) {
     filesInDirEndingWith(sourceDirectory, ".scala.html").foreach {
       template =>
         try {
-          // reflection is hampered here by TwirlCompiler's default parameters
-          TwirlCompiler.compile(template, sourceDirectory, generatedDir, "play.twirl.api.HtmlFormat", "import play.twirl.api._\nimport play.twirl.api.TemplateMagic._" + "\nimport " + templatesImport.mkString("\nimport "))
+
+          val compile = compiler.getDeclaredMethod("compile", classOf[java.io.File], classOf[java.io.File], classOf[java.io.File], classOf[String], classOf[String], classOf[Codec], classOf[Boolean], classOf[Boolean])
+          val defaultCodec = compiler.getDeclaredMethod("compile$default$6").invoke(null)
+          val defaultForInclusiveDot = compiler.getDeclaredMethod("compile$default$7").invoke(null)
+          val defaultForUseOldParser = compiler.getDeclaredMethod("compile$default$8").invoke(null)
+          compile.invoke(null, template, sourceDirectory, generatedDir, "play.twirl.api.HtmlFormat", "import play.twirl.api._\nimport play.twirl.api.TemplateMagic._" + "\nimport " + templatesImport.mkString("\nimport "), defaultCodec, defaultForInclusiveDot, defaultForUseOldParser)
 
         } catch {
           case e: java.lang.reflect.InvocationTargetException => {
