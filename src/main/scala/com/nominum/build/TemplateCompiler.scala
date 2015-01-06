@@ -17,7 +17,10 @@ package com.nominum.build
  */
 
 import java.io.File
+
 import com.nominum.build.Util.filesInDirEndingWith
+
+import scala.io.Codec
 
 class TemplateCompiler(classpath: Seq[File], forJava: Boolean) {
   // from the play sbt-plugin
@@ -50,15 +53,16 @@ class TemplateCompiler(classpath: Seq[File], forJava: Boolean) {
 
   def compile(sourceDirectory: File, generatedDir: File) = {
     val classLoader = new java.net.URLClassLoader(classpath.map(_.toURI.toURL).toArray, this.getClass.getClassLoader)
-    val compiler = classLoader.loadClass("play.templates.ScalaTemplateCompiler")
-    val generatedSource = classLoader.loadClass("play.templates.GeneratedSource")
+    val compiler = classLoader.loadClass("play.twirl.compiler.TwirlCompiler")
+    val generatedSource = classLoader.loadClass("play.twirl.compiler.GeneratedSource")
 
     // remove scala source files that no longer correspond with an html template file
     filesInDirEndingWith(generatedDir, ".template.scala").foreach {
       source =>
-        val constructor = generatedSource.getDeclaredConstructor(classOf[java.io.File])
+        val constructor = generatedSource.getDeclaredConstructor(classOf[File], classOf[Codec])
         val sync = generatedSource.getDeclaredMethod("sync")
-        val generated = constructor.newInstance(source)
+        val defaultCodec: AnyRef = generatedSource.getDeclaredMethod("apply$default$2").invoke(null)
+        val generated =  constructor.newInstance(source, defaultCodec)
         try {
           sync.invoke(generated)
         } catch {
@@ -73,9 +77,14 @@ class TemplateCompiler(classpath: Seq[File], forJava: Boolean) {
     // generate scala sources from html
     filesInDirEndingWith(sourceDirectory, ".scala.html").foreach {
       template =>
-        val compile = compiler.getDeclaredMethod("compile", classOf[java.io.File], classOf[java.io.File], classOf[java.io.File], classOf[String], classOf[String])
         try {
-          compile.invoke(null, template, sourceDirectory, generatedDir, "play.api.templates.HtmlFormat", "import play.api.templates._\nimport play.api.templates.PlayMagic._" + "\nimport " + templatesImport.mkString("\nimport "))
+
+          val compile = compiler.getDeclaredMethod("compile", classOf[java.io.File], classOf[java.io.File], classOf[java.io.File], classOf[String], classOf[String], classOf[Codec], classOf[Boolean], classOf[Boolean])
+          val defaultCodec = compiler.getDeclaredMethod("compile$default$6").invoke(null)
+          val defaultForInclusiveDot = compiler.getDeclaredMethod("compile$default$7").invoke(null)
+          val defaultForUseOldParser = compiler.getDeclaredMethod("compile$default$8").invoke(null)
+          compile.invoke(null, template, sourceDirectory, generatedDir, "play.twirl.api.HtmlFormat", "import play.twirl.api._\nimport play.twirl.api.TemplateMagic._" + "\nimport " + templatesImport.mkString("\nimport "), defaultCodec, defaultForInclusiveDot, defaultForUseOldParser)
+
         } catch {
           case e: java.lang.reflect.InvocationTargetException => {
             throw e.getTargetException
