@@ -15,7 +15,6 @@
  */
 package com.nominum.build;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
@@ -24,15 +23,14 @@ import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.project.MavenProject;
 
 import java.io.File;
-import java.io.IOException;
 
 /**
  * Link static assets directory into build output directory.
  *
  * This Mojo only works on Unix-like systems with the "ln" program.
  */
-@Mojo(name="link-assets",defaultPhase=LifecyclePhase.GENERATE_SOURCES)
-public class LinkAssetsMojo extends AbstractMojo {
+@Mojo(name="remove-link-assets",defaultPhase=LifecyclePhase.PRE_CLEAN)
+public class RemoveLinkAssetsMojo extends AbstractMojo {
 
     @Parameter(defaultValue="${project}",required=true,readonly=true)
     private MavenProject project;
@@ -62,38 +60,14 @@ public class LinkAssetsMojo extends AbstractMojo {
 
         String linkName = assetDir.getAbsolutePath().substring(assetDir.getParent().length() + 1);
         File linkTarget = new File(outputDir, linkName);
-   
-        // recreate link if it exists
-        if (linkTarget.exists()) {
+
+        // remove link if it exists
+        if (linkTarget.exists() && linkTarget.isFile()) {
             boolean deleted = linkTarget.delete();
             if (!deleted) {
                 throw new MojoExecutionException(
                         "Failed to delete " + linkName + " prior to linking asset directory");
             }
-        }
-
-        String[] command;
-        getLog().info("OS name:" +System.getProperty("os.name"));
-        if (System.getProperty("os.name").indexOf("indows")>0){
-            command = new String[] {"cmd" , "/c","mklink", "/D", linkTarget.getAbsolutePath(), assetDir.getAbsolutePath()};
-        } else {
-            command = new String[] {"ln", "-s", assetDir.getAbsolutePath(), linkTarget.getAbsolutePath()};
-        }
-
-        try {
-            getLog().info("Linking " + assetDirectory + " to " + linkTarget);
-
-            Process proc = Runtime.getRuntime().exec(command, null, new File("."));
-
-            int exitVal = proc.waitFor();
-            if (exitVal != 0) {
-                throw new MojoExecutionException("linking assets directory failed. Command: \"" + StringUtils.join(command, " ") + "\"");
-            }
-            getLog().info("Linking " + assetDirectory + " to " + linkTarget+" done");
-        } catch (InterruptedException e) {
-            throw new MojoExecutionException("link command failed", e);
-        } catch (IOException e) {
-            throw new MojoExecutionException("Unable to execute link command, run as administrator.", e);
         }
     }
 
