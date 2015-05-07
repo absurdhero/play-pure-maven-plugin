@@ -69,6 +69,10 @@ public class ServerMojo extends AbstractMojo implements FileListener {
     @Parameter(defaultValue="true", required=true)
     private Boolean generateReverseRouter;
 
+    /** whether is a Java or Scala project */
+    @Parameter(defaultValue="true", required=false)
+    private Boolean forJava;
+
     public void execute() throws MojoExecutionException, MojoFailureException {
 
         try {
@@ -175,7 +179,7 @@ public class ServerMojo extends AbstractMojo implements FileListener {
 
     private void compileTemplatesAndRoutes() throws MojoExecutionException {
         TemplateCompilerMojo.compileTemplatesAndRoutes(confDirectory,
-                generatedSourcesDirectory, project, sourceDirectory, generateReverseRouter);
+                generatedSourcesDirectory, project, sourceDirectory, generateReverseRouter, forJava);
     }
 
     public void fileCreated(FileChangeEvent event) throws Exception {
