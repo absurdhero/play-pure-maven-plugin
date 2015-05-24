@@ -1,7 +1,7 @@
 Play Pure-Maven Plugin
 ======================
 
-This plugin allows Play Framework 2.2 projects to use the Maven build system instead of SBT.
+This plugin allows Play Framework 2.3 projects to use the Maven build system instead of SBT.
 
 The plugin provides a solution to organizations who already have maven experience or
 would like to create a web application with Play Framework that plays well
@@ -99,7 +99,7 @@ In the plugins section:
    <plugin>
        <groupId>net.raboof.play</groupId>
        <artifactId>play-pure-maven-plugin</artifactId>
-       <version>2.3.7</version>
+       <version>2.3.9</version>
        <executions>
            <execution>
                <goals>
@@ -163,18 +163,18 @@ In the dependencies section, include the version of Play you will depend on:
         <dependency>
             <groupId>com.typesafe.play</groupId>
             <artifactId>play_2.10</artifactId>
-            <version>2.3.7</version>
+            <version>2.3.9</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>com.typesafe.play</groupId>
             <artifactId>templates_2.10</artifactId>
-            <version>2.3.7</version>
+            <version>2.3.9</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>com.typesafe.play</groupId>
             <artifactId>play-test_2.10</artifactId>
-            <version>2.3.7</version>
+            <version>2.3.9</version>
             <scope>compile</scope>
         </dependency>
