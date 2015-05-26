@@ -8,8 +8,8 @@
         <targetJdk>1.5</targetJdk>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
-        <play.version>2.3.9</play.version>
-        <play2-scala.version>2.10</play2-scala.version>
+        <play.version>2.4.0-RC5</play.version>
+        <play2-scala.version>2.11</play2-scala.version>
     </properties>
 
     <repositories>
@@ -22,7 +22,7 @@
     <build>
         <!-- Use the Play directory structure -->
         <directory>target</directory>
-        <outputDirectory>target/scala-2.10/classes</outputDirectory>
+        <outputDirectory>target/scala-2.11/classes</outputDirectory>
         <testOutputDirectory>target/test-classes</testOutputDirectory>
         <sourceDirectory>app</sourceDirectory>
         <testSourceDirectory>test</testSourceDirectory>
@@ -79,7 +79,7 @@
       <plugin>
           <groupId>net.raboof.play</groupId>
           <artifactId>play-pure-maven-plugin</artifactId>
-          <version>2.3.9</version>
+          <version>2.4.0-RC5</version>
           <executions>
               <execution>
                   <goals>

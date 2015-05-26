@@ -103,7 +103,7 @@ In the plugins section:
    <plugin>
        <groupId>net.raboof.play</groupId>
        <artifactId>play-pure-maven-plugin</artifactId>
-       <version>2.3.9</version>
+       <version>2.4.0-RC5</version>
        <executions>
            <execution>
                <goals>
@@ -166,26 +166,26 @@ In the dependencies section, include the Play modules you will depend on:
 
         <dependency>
             <groupId>com.typesafe.play</groupId>
-            <artifactId>play_2.10</artifactId>
-            <version>2.3.9</version>
+            <artifactId>play_2.11</artifactId>
+            <version>2.4.0-RC5</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>com.typesafe.play</groupId>
-            <artifactId>play-java_2.10</artifactId>
-            <version>2.3.9</version>
+            <artifactId>play-java_2.11</artifactId>
+            <version>2.4.0-RC5</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>com.typesafe.play</groupId>
-            <artifactId>twirl-api_2.10</artifactId>
+            <artifactId>twirl-api_2.11</artifactId>
             <version>1.0.4</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>com.typesafe.play</groupId>
-            <artifactId>play-test_2.10</artifactId>
-            <version>2.3.9</version>
+            <artifactId>play-test_2.11</artifactId>
+            <version>2.4.0-RC5</version>
             <scope>test</scope>
         </dependency>
 
