@@ -16,7 +16,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 
 /**
- * This mojo monitors source files and recompiles and reloads the development server automatically.
+ * This mojo monitors source files and recompiles templates and routes automatically when they change.
  */
 @Mojo(name="watch")
 public class ServerMojo extends AbstractMojo implements FileListener {
@@ -65,11 +65,17 @@ public class ServerMojo extends AbstractMojo implements FileListener {
     @Parameter(defaultValue="${project.basedir}")
     public File baseDirectory;
 
-    /** whether reverse routes are generated */
+    /**
+     * whether reverse routes are generated
+     */
     @Parameter(defaultValue="true", required=true)
     private Boolean generateReverseRouter;
 
-    /** whether is a Java or Scala project */
+    /**
+     * whether templates are compiled with support for Java projects or only Scala.
+     *
+     * If you set this to "true", you must add the play-java dependency to your project.
+     */
     @Parameter(defaultValue="true", required=false)
     private Boolean forJava;
 

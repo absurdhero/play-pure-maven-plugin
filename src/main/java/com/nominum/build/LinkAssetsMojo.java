@@ -29,7 +29,8 @@ import java.io.IOException;
 /**
  * Link static assets directory into build output directory.
  *
- * This Mojo only works on Unix-like systems with the "ln" program.
+ * This Mojo creates a symbolic link on unix-like systems
+ * and uses mklink on Windows.
  */
 @Mojo(name="link-assets",defaultPhase=LifecyclePhase.GENERATE_SOURCES)
 public class LinkAssetsMojo extends AbstractMojo {

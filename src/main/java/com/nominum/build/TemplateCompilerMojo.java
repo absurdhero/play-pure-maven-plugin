@@ -58,9 +58,17 @@ public class TemplateCompilerMojo extends AbstractMojo {
     @Parameter(defaultValue="${project.basedir}/conf",required=true)
     private File confDirectory;
 
+    /**
+     * whether reverse routes are generated
+     */
     @Parameter(defaultValue="true", required=true)
     private Boolean generateReverseRouter;
 
+    /**
+     * whether templates are compiled with support for Java projects or only Scala.
+     *
+     * If you set this to "true", you must add the play-java dependency to your project.
+     */
     @Parameter(defaultValue="true", required=false)
     private Boolean forJava;
 

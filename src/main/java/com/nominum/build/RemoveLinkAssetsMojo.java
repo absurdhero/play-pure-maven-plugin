@@ -25,9 +25,7 @@ import org.apache.maven.project.MavenProject;
 import java.io.File;
 
 /**
- * Link static assets directory into build output directory.
- *
- * This Mojo only works on Unix-like systems with the "ln" program.
+ * Remove the link to the static assets directory.
  */
 @Mojo(name="remove-link-assets",defaultPhase=LifecyclePhase.PRE_CLEAN)
 public class RemoveLinkAssetsMojo extends AbstractMojo {
