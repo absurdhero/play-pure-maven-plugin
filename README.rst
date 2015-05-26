@@ -21,6 +21,7 @@ Features
 - Compiles conf/routes file
 - Makes static assets available in the classpath with no copying
 - Does not require that Play or SBT be installed
+- Experimental continuous template compilation
 
 Benefits
 --------
@@ -58,10 +59,13 @@ play-pure:link-assets
   This goal allows you to change javascript and other assets and see your changes immediately in your running server.
   It adds your public assets directory to the classpath by creating a symlink in the build output directory.
 
+play-pure:watch
+  Watches for changes to templates and compiles them to java source files. Leave this mojo running in the background
+  and edit templates like normal in your IDE. Your IDE should pick up the re-compiled templates after a few seconds.
+
 To-Do
 -----
 
-- Support continuous compilation of templates as source files are edited
 - Provide a hot-reloading development server through an SBTLink implementation or other mechanism
 - Find a way to use the play version specified by the plugin consumer rather than specifying a version in this plugin.
   Instead, this plugin is versioned based on the play version it is tied with.
