@@ -16,27 +16,30 @@
 package com.nominum.build
 
 import java.io.File
-import play.router._
-import play.router.RoutesCompiler._
+import play.routes.compiler._
 import com.nominum.build.Util.filesInDirStartingWith
 import org.apache.maven.plugin.MojoExecutionException
 
+/** The routes compiler generates static routes and optionally reverse routes.
+  *
+  * It does not currently support injected routes as found in Play 2.4.
+  */
 class PlayRoutesCompiler {
   def compile(confDirectory: File, generatedDir: File, additionalImports: Seq[String], generateReverseRouter: Boolean) = {
 
-    (Array(new File(generatedDir, "routes.java")) ++ filesInDirStartingWith(generatedDir, "routes_*")).filter(_ == null).map(GeneratedSource(_)).foreach(_.sync())
     var routesFile = new File(confDirectory, "routes")
     if (!routesFile.exists) {
        for (file <- confDirectory.listFiles.filter(_.getName.endsWith("routes"))) {
          if (file.exists) routesFile = file
        }
     }
-    try {
-      RoutesCompiler.compile(routesFile, generatedDir, additionalImports, generateReverseRouter)
-    } catch {
-      case e: RoutesCompilationError => throw new MojoExecutionException("Error in routes file on line " + e.line, e)
-    }
-    (filesInDirStartingWith(generatedDir, "routes_*") ++ Array(new File(generatedDir, "routes.java"))).map(_.getAbsoluteFile)
+    val routerTask = new RoutesCompiler.RoutesCompilerTask(routesFile, additionalImports, true, generateReverseRouter, false)
 
+    RoutesCompiler.compile(routerTask, StaticRoutesGenerator, generatedDir).fold(
+      (errors: Seq[RoutesCompilationError]) =>
+        throw new MojoExecutionException(errors.head, "Error in routes file on line " + errors.head.line, errors.head.message),
+      (sf: Seq[File]) => {}
+    )
+    (filesInDirStartingWith(generatedDir, "routes_*") ++ Array(new File(generatedDir, "routes.java"))).map(_.getAbsoluteFile)
   }
 }
