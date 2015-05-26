@@ -111,7 +111,7 @@
             <groupId>com.typesafe.play</groupId>
             <artifactId>twirl-api_${play2-scala.version}</artifactId>
             <!-- use a variable? -->
-            <version>1.0.3</version>
+            <version>1.0.4</version>
             <scope>compile</scope>
         </dependency>
         <dependency>

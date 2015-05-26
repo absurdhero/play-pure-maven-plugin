@@ -63,8 +63,8 @@ To-Do
 
 - Support continuous compilation of templates as source files are edited
 - Provide a hot-reloading development server through an SBTLink implementation or other mechanism
-- Find a way to use the play version specified by the plugin consumer rather than specifying a version in this plugin
-  As an alternative, this plugin is versioned based on the play version it is tied with.
+- Find a way to use the play version specified by the plugin consumer rather than specifying a version in this plugin.
+  Instead, this plugin is versioned based on the play version it is tied with.
 - Asset linking is only supported on unix-like systems. A solution for Windows would be nice.
 
 License
@@ -156,7 +156,7 @@ Add the Typesafe Repository so the Play Framework can be downloaded:
           </repository>
       </repositories>
 
-In the dependencies section, include the version of Play you will depend on:
+In the dependencies section, include the Play modules you will depend on:
 
 ::
 
@@ -168,13 +168,20 @@ In the dependencies section, include the version of Play you will depend on:
         </dependency>
         <dependency>
             <groupId>com.typesafe.play</groupId>
-            <artifactId>templates_2.10</artifactId>
+            <artifactId>play-java_2.10</artifactId>
             <version>2.3.9</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.typesafe.play</groupId>
+            <artifactId>twirl-api_2.10</artifactId>
+            <version>1.0.4</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>com.typesafe.play</groupId>
             <artifactId>play-test_2.10</artifactId>
             <version>2.3.9</version>
-            <scope>compile</scope>
+            <scope>test</scope>
         </dependency>
+
