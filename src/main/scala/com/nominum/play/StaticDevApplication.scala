@@ -1,9 +1,17 @@
 package com.nominum.play
 
-import play.core._
 import java.io.File
-import play.api.{Play, Mode, DefaultApplication}
-import scala.util.{Try, Success, Failure}
+
+import akka.actor.ActorSystem
+import play.api._
+import play.api.http._
+import play.api.inject.{DefaultApplicationLifecycle, Injector, NewInstanceInjector, SimpleInjector}
+import play.api.libs.concurrent.ActorSystemProvider
+import play.api.libs.{Crypto, CryptoConfig, CryptoConfigParser}
+import play.api.mvc.EssentialFilter
+import play.core._
+
+import scala.util.Try
 
 /**
  * Creates and initializes an Application in development mode.
@@ -11,10 +19,29 @@ import scala.util.{Try, Success, Failure}
  */
 class StaticDevApplication(applicationPath: File) extends ApplicationProvider {
 
-  val application = new DefaultApplication(applicationPath, this.getClass.getClassLoader, None, Mode.Dev)
+  lazy val injector: Injector = new SimpleInjector(NewInstanceInjector) + router + crypto + httpConfiguration
 
-  Play.start(application)
+  lazy val httpConfiguration: HttpConfiguration = HttpConfiguration.fromConfiguration(configuration)
+  lazy val httpRequestHandler: HttpRequestHandler = new DefaultHttpRequestHandler(router, httpErrorHandler, httpConfiguration, httpFilters: _*)
+  lazy val httpErrorHandler: HttpErrorHandler = new DefaultHttpErrorHandler(environment, configuration, sourceMapper,
+    Some(router))
+  lazy val httpFilters: Seq[EssentialFilter] = Nil
 
-  def get = Try(application)
+  lazy val applicationLifecycle: DefaultApplicationLifecycle = new DefaultApplicationLifecycle
+  lazy val application: Application = new DefaultApplication(environment, applicationLifecycle, injector,
+    configuration, httpRequestHandler, httpErrorHandler, actorSystem, Plugins.empty)
+
+  lazy val actorSystem: ActorSystem = new ActorSystemProvider(environment, configuration, applicationLifecycle).get
+
+  lazy val cryptoConfig: CryptoConfig = new CryptoConfigParser(environment, configuration).get
+  lazy val crypto: Crypto = new Crypto(cryptoConfig)
+  
+  //  val application = new DefaultApplication(applicationPath, this.getClass.getClassLoader, None, Mode.Dev)
+  val app = new DefaultApplication()
+
+  Play.start(app)
+
+  def get = Try(app)
+
   def path = applicationPath
 }
