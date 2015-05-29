@@ -51,6 +51,14 @@ class TemplateCompiler(classpath: Seq[File], forJava: Boolean) {
       "views.html._")
   }
 
+  val fileExtensions = Map(
+    "html" -> "play.twirl.api.HtmlFormat",
+    "js"  -> "play.twirl.api.JavaScriptFormat",
+    "txt" -> "play.twirl.api.TxtFormat",
+    "xml" -> "play.twirl.api.XmlFormat"
+  )
+  play.twirl.api.Formats
+
   def compile(sourceDirectory: File, generatedDir: File) = {
     val classLoader = new java.net.URLClassLoader(classpath.map(_.toURI.toURL).toArray, this.getClass.getClassLoader)
     val compiler = classLoader.loadClass("play.twirl.compiler.TwirlCompiler")
@@ -74,22 +82,27 @@ class TemplateCompiler(classpath: Seq[File], forJava: Boolean) {
         }
     }
 
-    // generate scala sources from html
-    filesInDirEndingWith(sourceDirectory, ".scala.html").foreach {
-      template =>
-        try {
+    // generate scala sources from each supported file extension
+    fileExtensions.foreach {
+      case (ext: String, formatter: String) => {
 
-          val compile = compiler.getDeclaredMethod("compile", classOf[java.io.File], classOf[java.io.File], classOf[java.io.File], classOf[String], classOf[String], classOf[Codec], classOf[Boolean], classOf[Boolean])
-          val defaultCodec = compiler.getDeclaredMethod("compile$default$6").invoke(null)
-          val defaultForInclusiveDot = compiler.getDeclaredMethod("compile$default$7").invoke(null)
-          val defaultForUseOldParser = compiler.getDeclaredMethod("compile$default$8").invoke(null)
-          compile.invoke(null, template, sourceDirectory, generatedDir, "play.twirl.api.HtmlFormat", "import play.twirl.api._\nimport play.twirl.api.TemplateMagic._" + "\nimport " + templatesImport.mkString("\nimport "), defaultCodec, defaultForInclusiveDot, defaultForUseOldParser)
+        filesInDirEndingWith(sourceDirectory, ".scala." + ext).foreach {
+          template =>
+            try {
 
-        } catch {
-          case e: java.lang.reflect.InvocationTargetException => {
-            throw e.getTargetException
-          }
+              val compile = compiler.getDeclaredMethod("compile", classOf[java.io.File], classOf[java.io.File], classOf[java.io.File], classOf[String], classOf[String], classOf[Codec], classOf[Boolean], classOf[Boolean])
+              val defaultCodec = compiler.getDeclaredMethod("compile$default$6").invoke(null)
+              val defaultForInclusiveDot = compiler.getDeclaredMethod("compile$default$7").invoke(null)
+              val defaultForUseOldParser = compiler.getDeclaredMethod("compile$default$8").invoke(null)
+              compile.invoke(null, template, sourceDirectory, generatedDir, formatter, "import play.twirl.api._\nimport play.twirl.api.TemplateMagic._" + "\nimport " + templatesImport.mkString("\nimport "), defaultCodec, defaultForInclusiveDot, defaultForUseOldParser)
+
+            } catch {
+              case e: java.lang.reflect.InvocationTargetException => {
+                throw e.getTargetException
+              }
+            }
         }
+      }
     }
 
     filesInDirEndingWith(generatedDir, ".scala").map(_.getAbsoluteFile)
