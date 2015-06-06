@@ -47,7 +47,7 @@
       <plugin>
         <groupId>net.alchim31.maven</groupId>
         <artifactId>scala-maven-plugin</artifactId>
-        <version>3.1.6</version>
+        <version>3.2.0</version>
         <configuration>
           <recompileMode>incremental</recompileMode>
           <charset>UTF-8</charset>
@@ -111,7 +111,7 @@
             <groupId>com.typesafe.play</groupId>
             <artifactId>twirl-api_${play2-scala.version}</artifactId>
             <!-- use a variable? -->
-            <version>1.0.4</version>
+            <version>1.1.1</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
