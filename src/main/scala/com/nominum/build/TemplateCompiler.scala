@@ -73,7 +73,7 @@ class TemplateCompiler(classpath: Seq[File], forJava: Boolean) {
               val defaultCodec = compiler.getDeclaredMethod("compile$default$6").invoke(null)
               val defaultForInclusiveDot = compiler.getDeclaredMethod("compile$default$7").invoke(null)
               val defaultForUseOldParser = compiler.getDeclaredMethod("compile$default$8").invoke(null)
-              compile.invoke(null, template, sourceDirectory, generatedDir, formatter, "import play.twirl.api._\nimport play.twirl.api.TemplateMagic._" + "\nimport " + templatesImport.toList.mkString("\nimport "), defaultCodec, defaultForInclusiveDot, defaultForUseOldParser)
+              compile.invoke(null, template, sourceDirectory, generatedDir, formatter, "import play.twirl.api._\nimport play.twirl.api.TemplateMagic._" + "\nimport " + templatesImport.toList.mkString("\nimport ").replace("%format%", ext), defaultCodec, defaultForInclusiveDot, defaultForUseOldParser)
 
             } catch {
               case e: java.lang.reflect.InvocationTargetException => {
