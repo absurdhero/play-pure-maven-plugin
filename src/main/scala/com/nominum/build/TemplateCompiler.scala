@@ -19,37 +19,16 @@ package com.nominum.build
 import java.io.File
 
 import com.nominum.build.Util.filesInDirEndingWith
+import play.TemplateImports
+import scala.collection.JavaConversions._
 
 import scala.io.Codec
 
 class TemplateCompiler(classpath: Seq[File], forJava: Boolean) {
-  // from the play sbt-plugin
-  val templatesImport : Seq[String] =
-  if (forJava) {
-    Seq(
-      "models._",
-      "controllers._",
-      "java.lang._",
-      "java.util._",
-      "scala.collection.JavaConversions._",
-      "scala.collection.JavaConverters._",
-      "play.api.i18n._",
-      "play.core.j.PlayMagicForJava._",
-      "play.mvc._",
-      "play.data._",
-      "play.api.data.Field",
-      "play.mvc.Http.Context.Implicit._",
-      "views.html._" )
-
-  } else {
-    Seq(
-      "models._",
-      "controllers._",
-      "play.api.i18n._",
-      "play.api.mvc._",
-      "play.api.data._",
-      "views.html._")
-  }
+  val templatesImport = if (forJava)
+    TemplateImports.defaultJavaTemplateImports
+  else
+    TemplateImports.defaultScalaTemplateImports
 
   val fileExtensions = Map(
     "html" -> "play.twirl.api.HtmlFormat",
@@ -94,7 +73,7 @@ class TemplateCompiler(classpath: Seq[File], forJava: Boolean) {
               val defaultCodec = compiler.getDeclaredMethod("compile$default$6").invoke(null)
               val defaultForInclusiveDot = compiler.getDeclaredMethod("compile$default$7").invoke(null)
               val defaultForUseOldParser = compiler.getDeclaredMethod("compile$default$8").invoke(null)
-              compile.invoke(null, template, sourceDirectory, generatedDir, formatter, "import play.twirl.api._\nimport play.twirl.api.TemplateMagic._" + "\nimport " + templatesImport.mkString("\nimport "), defaultCodec, defaultForInclusiveDot, defaultForUseOldParser)
+              compile.invoke(null, template, sourceDirectory, generatedDir, formatter, "import play.twirl.api._\nimport play.twirl.api.TemplateMagic._" + "\nimport " + templatesImport.toList.mkString("\nimport "), defaultCodec, defaultForInclusiveDot, defaultForUseOldParser)
 
             } catch {
               case e: java.lang.reflect.InvocationTargetException => {

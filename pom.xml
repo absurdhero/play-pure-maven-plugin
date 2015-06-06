@@ -188,7 +188,11 @@
       <groupId>com.typesafe.play</groupId>
       <artifactId>play_${play2-scala.version}</artifactId>
       <version>${play.version}</version>
-      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.typesafe.play</groupId>
+      <artifactId>build-link</artifactId>
+      <version>${play.version}</version>
     </dependency>
     <dependency>
       <groupId>com.typesafe.play</groupId>
