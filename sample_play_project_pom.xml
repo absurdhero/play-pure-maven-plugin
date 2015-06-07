@@ -45,7 +45,7 @@
       <plugin>
         <groupId>net.alchim31.maven</groupId>
         <artifactId>scala-maven-plugin</artifactId>
-        <version>3.0.1</version>
+        <version>3.2.0</version>
         <configuration>
           <!-- Use Zinc Compiler if running (https://github.com/typesafehub/zinc) -->
           <recompileMode>incremental</recompileMode>
@@ -83,6 +83,7 @@
           <executions>
               <execution>
                   <goals>
+                      <goal>compile-routes</goal>
                       <goal>compile-templates</goal>
                       <goal>link-assets</goal>
                   </goals>
@@ -160,10 +161,12 @@
             <version>${play.version}</version>
             <scope>compile</scope>
         </dependency>
+
+        <!-- play templates library -->
         <dependency>
             <groupId>com.typesafe.play</groupId>
-            <artifactId>templates_${play2-scala.version}</artifactId>
-            <version>${play.version}</version>
+            <artifactId>twirl-api_2.11</artifactId>
+            <version>1.1.1</version>
             <scope>compile</scope>
         </dependency>
 

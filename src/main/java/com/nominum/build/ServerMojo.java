@@ -184,8 +184,10 @@ public class ServerMojo extends AbstractMojo implements FileListener {
     }
 
     private void compileTemplatesAndRoutes() throws MojoExecutionException {
-        TemplateCompilerMojo.compileTemplatesAndRoutes(confDirectory,
-                generatedSourcesDirectory, project, sourceDirectory, generateReverseRouter, forJava);
+        RouteCompilerMojo.compileRoutes(confDirectory,
+                generatedSourcesDirectory, project, generateReverseRouter);
+        TemplateCompilerMojo.compileTemplates(
+                generatedSourcesDirectory, project, sourceDirectory, forJava);
     }
 
     public void fileCreated(FileChangeEvent event) throws Exception {

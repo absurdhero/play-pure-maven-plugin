@@ -13,7 +13,6 @@ compile the routes file, and includes the "public" assets directory in your buil
 This plugin is easy to test out since it is possible to add it to
 an existing Play SBT project without modifying the directory structure.
 
-
 Features
 --------
 
@@ -31,6 +30,22 @@ Benefits
 - Complete maven remote repo support including support for central proxies
 - Leverages mature IDE support
 - Easy Jenkins integration
+
+Changes
+-------
+
+2.4.0
+~~~~~
+
+This plugin requires Java 8 just as Play 2.4 now requires it.
+
+Route compilation was moved into its own mojo. When upgrading from earlier versions,
+add ``<goal>compile-routes</goal>`` to the list of goals to run from this plugin
+to continue compiling your routes file.
+
+Compiled objects are now written to target/scala-2.11 rather than target/scala-2.10
+reflecting the update in scala versions.
+
 
 Installing the Plugin From Source
 ---------------------------------
@@ -53,15 +68,18 @@ To get much more detailed help after installing the plugin,
 run ``mvn help:describe -Ddetail=true -Dplugin=net.raboof.play:play-pure-maven-plugin``
 
 play-pure:compile-templates
-  Translates scala.html templates and conf/routes into scala source files.
+  Translates scala.html templates into scala source files.
+
+play-pure:compile-routes
+  Translates conf/routes into source files.
 
 play-pure:link-assets
   This goal allows you to change javascript and other assets and see your changes immediately in your running server.
   It adds your public assets directory to the classpath by creating a symlink in the build output directory.
 
 play-pure:watch
-  Watches for changes to templates and compiles them to java source files. Leave this mojo running in the background
-  and edit templates like normal in your IDE. Your IDE should pick up the re-compiled templates after a few seconds.
+  Watches for changes to templates and routes and compiles them to source files. Leave this mojo running in the background
+  and edit templates like normal in your IDE. Your IDE should pick up the re-compiled files after a few seconds.
 
 To-Do
 -----
@@ -69,7 +87,6 @@ To-Do
 - Provide a hot-reloading development server through an SBTLink implementation or other mechanism
 - Find a way to use the play version specified by the plugin consumer rather than specifying a version in this plugin.
   Instead, this plugin is versioned based on the play version it is tied with.
-- Asset linking is only supported on unix-like systems. A solution for Windows would be nice.
 
 License
 -------
@@ -107,6 +124,7 @@ In the plugins section:
        <executions>
            <execution>
                <goals>
+                   <goal>compile-routes</goal>
                    <goal>compile-templates</goal>
                    <goal>link-assets</goal>
                </goals>
@@ -179,7 +197,7 @@ In the dependencies section, include the Play modules you will depend on:
         <dependency>
             <groupId>com.typesafe.play</groupId>
             <artifactId>twirl-api_2.11</artifactId>
-            <version>1.0.4</version>
+            <version>1.1.1</version>
             <scope>compile</scope>
         </dependency>
         <dependency>

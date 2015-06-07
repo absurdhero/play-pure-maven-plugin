@@ -21,36 +21,44 @@ import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.project.MavenProject;
-
 import play.twirl.compiler.TemplateCompilationError;
-import scala.collection.JavaConversions;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
- * Compiles scala.html files to scala source files and compiles routes.
+ * Compiles routes.
  *
  * @requiresDependencyResolution compile
  */
-@Mojo(name="compile-templates",defaultPhase=LifecyclePhase.GENERATE_SOURCES)
-public class TemplateCompilerMojo extends AbstractMojo {
+@Mojo(name="compile-routes",defaultPhase=LifecyclePhase.GENERATE_SOURCES)
+public class RouteCompilerMojo extends AbstractMojo {
 
     @Parameter(defaultValue="${project}",required=true,readonly=true)
     private MavenProject project;
-
-    /**
-     * Location of the compiled templates.
-     */
-    @Parameter(defaultValue="${project.build.directory}/generated-sources/play-templates",required=true)
-    private File generatedSourcesDirectory;
 
     /**
      * Location of the source files.
      */
     @Parameter(defaultValue="${project.build.sourceDirectory}",required=true)
     private File sourceDirectory;
+
+    /**
+     * Location of the compiled routes.
+     */
+    @Parameter(defaultValue="${project.build.directory}/generated-sources/play-templates",required=true)
+    private File generatedSourcesDirectory;
+
+    /**
+     * Location of the play conf directory.
+     */
+    @Parameter(defaultValue="${project.basedir}/conf",required=true)
+    private File confDirectory;
+
+    /**
+     * whether reverse routes are generated
+     */
+    @Parameter(defaultValue="true", required=true)
+    private Boolean generateReverseRouter;
 
     /**
      * whether templates are compiled with support for Java projects or only Scala.
@@ -63,11 +71,11 @@ public class TemplateCompilerMojo extends AbstractMojo {
     public void execute()
         throws MojoExecutionException {
         try {
-            compileTemplates(
+            compileRoutes(
+                    absolutePath(confDirectory),
                     absolutePath(generatedSourcesDirectory),
                     project,
-                    absolutePath(sourceDirectory),
-                    forJava);
+                    generateReverseRouter);
         } catch (TemplateCompilationError e) {
             String msg = String.format("Error in template %s:%s %s", e.source().getPath(), e.line(), e.message());
             throw new MojoExecutionException(msg);
@@ -75,10 +83,11 @@ public class TemplateCompilerMojo extends AbstractMojo {
     }
 
     /** This static method is usable by other Mojos */
-    public static void compileTemplates(File outputDir,
-                                        MavenProject project,
-                                        File sourceDir,
-                                        boolean forJava) throws MojoExecutionException {
+    public static void compileRoutes(File confDirectory,
+                                     File outputDir,
+                                     MavenProject project,
+                                     boolean generateReverseRouter)
+            throws MojoExecutionException {
         project.addCompileSourceRoot(outputDir.getAbsolutePath());
 
         if (!outputDir.exists()) {
@@ -86,17 +95,10 @@ public class TemplateCompilerMojo extends AbstractMojo {
             if (!created) throw new MojoExecutionException("Failed to create output directory");
         }
 
-        List<File> classpathFiles = new ArrayList<File>();
-        String classpath = System.getProperty("java.class.path");
-        for (String path : classpath.split(":")) {
-            classpathFiles.add(new File(path));
-        }
-
-        TemplateCompiler templateCompiler =
-                new TemplateCompiler(JavaConversions.asScalaBuffer(classpathFiles).toList(), forJava);
-        templateCompiler.compile(sourceDir, outputDir);
+        PlayRoutesCompiler routesCompiler = new PlayRoutesCompiler();
+        routesCompiler.compile(confDirectory, outputDir,
+                new scala.collection.mutable.ArrayBuffer<String>(), generateReverseRouter);
     }
-
 
     /** 
      * Convert Files with relative paths to be relative from the project basedir. 

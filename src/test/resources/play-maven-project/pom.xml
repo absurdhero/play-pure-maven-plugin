@@ -83,6 +83,7 @@
           <executions>
               <execution>
                   <goals>
+                      <goal>compile-routes</goal>
                       <goal>compile-templates</goal>
                       <goal>link-assets</goal>
                   </goals>
