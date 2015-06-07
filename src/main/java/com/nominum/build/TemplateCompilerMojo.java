@@ -43,7 +43,7 @@ public class TemplateCompilerMojo extends AbstractMojo {
     /**
      * Location of the compiled templates.
      */
-    @Parameter(defaultValue="${project.build.directory}/generated-sources/play-templates",required=true)
+    @Parameter(defaultValue="${project.build.directory}/generated-sources/play",required=true)
     private File generatedSourcesDirectory;
 
     /**

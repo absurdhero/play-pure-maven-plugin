@@ -37,6 +37,9 @@ Changes
 2.4.0
 ~~~~~
 
+It is recommended that you run ``mvn clean`` on your project after upgrading this plugin
+due to various path changes in the target directory.
+
 This plugin requires Java 8 just as Play 2.4 now requires it.
 
 Route compilation was moved into its own mojo. When upgrading from earlier versions,
@@ -45,6 +48,11 @@ to continue compiling your routes file.
 
 Compiled objects are now written to target/scala-2.11 rather than target/scala-2.10
 reflecting the update in scala versions.
+
+Generated source files were moved from ``target/generated-sources/play-templates``
+to ``target/generated-sources/play`` since we write both template and route source files there.
+You may change it back by overriding the ``generatedSourcesDirectory`` variable for each
+mojo.
 
 
 Installing the Plugin From Source
