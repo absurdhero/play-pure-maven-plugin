@@ -34,6 +34,15 @@ Benefits
 Changes
 -------
 
+The version number of this plugin always matches the version of the play
+framework it is built to work with. Additional changes in each release are
+noted below.
+
+2.4.2
+~~~~~
+
+Updated the the latest patch versions of scala and the scala-maven-plugin.
+
 2.4.0
 ~~~~~
 
