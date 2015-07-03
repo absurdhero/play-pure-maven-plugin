@@ -6,7 +6,7 @@
 
     <properties>
         <targetJdk>1.7</targetJdk>
-        <play.version>2.4.0</play.version>
+        <play.version>2.4.2</play.version>
         <play2-scala.version>2.11</play2-scala.version>
     </properties>
 
@@ -45,7 +45,7 @@
       <plugin>
         <groupId>net.alchim31.maven</groupId>
         <artifactId>scala-maven-plugin</artifactId>
-        <version>3.2.0</version>
+        <version>3.2.2</version>
         <configuration>
           <!-- Use Zinc Compiler if running (https://github.com/typesafehub/zinc) -->
           <recompileMode>incremental</recompileMode>
@@ -79,7 +79,7 @@
       <plugin>
           <groupId>net.raboof.play</groupId>
           <artifactId>play-pure-maven-plugin</artifactId>
-          <version>2.4.0</version>
+          <version>2.4.2</version>
           <executions>
               <execution>
                   <goals>
