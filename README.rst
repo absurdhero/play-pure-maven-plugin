@@ -38,6 +38,11 @@ The version number of this plugin always matches the version of the play
 framework it is built to work with. Additional changes in each release are
 noted below.
 
+2.4.6
+~~~~~
+
+Set targetJdk version to 1.8 in sample poms.
+
 2.4.2
 ~~~~~
 
@@ -137,7 +142,7 @@ In the plugins section:
    <plugin>
        <groupId>net.raboof.play</groupId>
        <artifactId>play-pure-maven-plugin</artifactId>
-       <version>2.4.2</version>
+       <version>2.4.6</version>
        <executions>
            <execution>
                <goals>
@@ -202,13 +207,13 @@ In the dependencies section, include the Play modules you will depend on:
         <dependency>
             <groupId>com.typesafe.play</groupId>
             <artifactId>play_2.11</artifactId>
-            <version>2.4.2</version>
+            <version>2.4.6</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>com.typesafe.play</groupId>
             <artifactId>play-java_2.11</artifactId>
-            <version>2.4.2</version>
+            <version>2.4.6</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
@@ -220,7 +225,7 @@ In the dependencies section, include the Play modules you will depend on:
         <dependency>
             <groupId>com.typesafe.play</groupId>
             <artifactId>play-test_2.11</artifactId>
-            <version>2.4.2</version>
+            <version>2.4.6</version>
             <scope>test</scope>
         </dependency>
 
