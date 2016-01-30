@@ -3,8 +3,6 @@ import org.apache.maven.it.Verifier;
 import org.apache.maven.it.util.ResourceExtractor;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
 
 public class SmokeTest extends TestCase {
     public void testLinkAssetsMojo() throws Exception {
@@ -33,8 +31,7 @@ public class SmokeTest extends TestCase {
          * recurse. We are only installing the parent pom to
          * the local repo here.
          */
-        List cliOptions = new ArrayList();
-        cliOptions.add( "-N" );
+        verifier.addCliOption("-N");
         verifier.executeGoal( "install" );
 
         /*

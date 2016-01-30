@@ -105,9 +105,9 @@ public class ServerMojo extends AbstractMojo implements FileListener {
         }
     }
 
-    class StreamConsumer extends Thread {
+    private static class StreamConsumer extends Thread {
 
-        private Process process;
+        private final Process process;
 
         public StreamConsumer(Process process) {
             this.process = process;
@@ -119,7 +119,7 @@ public class ServerMojo extends AbstractMojo implements FileListener {
                 InputStreamReader inputStream = new InputStreamReader(process.getInputStream());
                 BufferedReader bufferedOut = new BufferedReader(inputStream);
 
-                String line = null;
+                String line;
                 while ((line = bufferedOut.readLine()) != null) {
                     // HACK filter out noise from slightly broken 3.1.0 version of the plugin
                     if (line.equals("[INFO] wait for files to compile...")
@@ -127,8 +127,7 @@ public class ServerMojo extends AbstractMojo implements FileListener {
                     System.out.println(line);
                 }
             }
-            catch (IOException e) {
-                return;
+            catch (IOException ignored) {
             }
         }
     }
@@ -164,7 +163,7 @@ public class ServerMojo extends AbstractMojo implements FileListener {
             process.getInputStream().close();
             process.getOutputStream().close();
             process.getErrorStream().close();
-        } catch (IOException e) {
+        } catch (IOException ignored) {
         }
         process.destroy();
     }
