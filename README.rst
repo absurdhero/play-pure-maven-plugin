@@ -1,6 +1,9 @@
 Play Pure-Maven Plugin
 ======================
 
+.. image:: https://travis-ci.org/absurdhero/play-pure-maven-plugin.svg?branch=master
+    :target: https://travis-ci.org/absurdhero/play-pure-maven-plugin
+
 This plugin allows Play Framework 2.4 projects to use the Maven build system instead of SBT.
 
 The plugin provides a solution to organizations who already have maven experience or
