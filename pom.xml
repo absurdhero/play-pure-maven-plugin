@@ -222,7 +222,7 @@
     </dependency>
     <dependency>
       <groupId>com.typesafe.play</groupId>
-      <artifactId>routes-compiler_2.10</artifactId>
+      <artifactId>routes-compiler_2.11</artifactId>
       <version>${play.version}</version>
     </dependency>
     <dependency>
