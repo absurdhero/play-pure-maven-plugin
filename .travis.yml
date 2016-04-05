@@ -1,3 +1,6 @@
+# allows docker containers to be used for builds
+sudo: false
+
 language: java
 
 jdk:
@@ -5,4 +8,11 @@ jdk:
 
 script:
   - mvn install -DskipTests
-  - mvn verify
+  - mvn integration-test
+
+before_cache:
+  - rm -f $HOME/.m2/repository/net/raboof/play
+
+cache:
+  directories:
+  - $HOME/.m2
