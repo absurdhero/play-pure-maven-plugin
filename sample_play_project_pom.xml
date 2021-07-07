@@ -173,23 +173,23 @@
         <!-- More optional Play Framework libraries -->
         <dependency>
             <groupId>com.typesafe.play</groupId>
-            <artifactId>play-java-jdbc_${play.scala.version}</artifactId>
+            <artifactId>play-java-jdbc_${play2-scala.version}</artifactId>
             <version>${play.version}</version>
         </dependency>
         <dependency>
             <groupId>com.typesafe.play</groupId>
-            <artifactId>play-java-ebean_${play.scala.version}</artifactId>
+            <artifactId>play-java-ebean_${play2-scala.version}</artifactId>
             <version>${play.version}</version>
         </dependency>
         <dependency>
             <groupId>com.typesafe.play</groupId>
-            <artifactId>play-cache_${play.scala.version}</artifactId>
+            <artifactId>play-cache_${play2-scala.version}</artifactId>
             <version>${play.version}</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>com.typesafe.play</groupId>
-            <artifactId>play-json_${play.scala.version}</artifactId>
+            <artifactId>play-json_${play2-scala.version}</artifactId>
             <version>${play.version}</version>
             <scope>compile</scope>
         </dependency>
